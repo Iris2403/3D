@@ -1,0 +1,56 @@
+<footer class="site-footer on-dark">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__col">
+        <p class="h2">{{ section.settings.heading | escape }}</p>
+        <p class="prose" style="margin-top: 1rem">{{ section.settings.text | escape }}</p>
+        <div class="btn-row" style="margin-top: 1.5rem">
+          <a class="btn btn--light" href="{{ settings.order_url }}" target="_blank" rel="noopener" data-magnetic>{{ settings.order_label | escape }} {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}<span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span></a>
+        </div>
+      </div>
+      <div class="footer__col">
+        <h2>{{ 'footer.explore' | t }}</h2>
+        <ul role="list">
+          <li><a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a></li>
+          <li><a href="/pages/menu">{{ 'footer.menu' | t }}</a></li>
+          <li><a href="/#about">{{ 'footer.about' | t }}</a></li>
+          <li><a href="/pages/gallery">{{ 'footer.gallery' | t }}</a></li>
+          <li><a href="/#locations">{{ 'footer.locations' | t }}</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h2>{{ 'footer.company' | t }}</h2>
+        <ul role="list">
+          <li><a href="/pages/contact">{{ 'footer.franchise' | t }}</a></li>
+          <li><a href="/pages/careers">{{ 'footer.careers' | t }}</a></li>
+          <li><a href="/#faq">{{ 'footer.faq' | t }}</a></li>
+          <li><a href="/policies/privacy-policy">{{ 'footer.privacy' | t }}</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h2>{{ 'footer.follow' | t }}</h2>
+        <ul role="list">
+          {%- if settings.instagram_url != blank -%}
+            <li><a href="{{ settings.instagram_url }}" target="_blank" rel="noopener">Instagram · @kuki.ath<span class="visually-hidden"> ({{ 'general.opens_new_window' | t }})</span></a></li>
+          {%- endif -%}
+        </ul>
+      </div>
+    </div>
+    <p class="footer__big" aria-hidden="true">kuki</p>
+    <div class="footer__bottom">
+      <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name | escape }}. {{ section.settings.copyright | escape }}</p>
+      <p>{{ 'footer.made_in' | t }}</p>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Eaten in seconds." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Soft, buttery, ridiculously good cookies, baked fresh every day in Athens." },
+    { "type": "text", "id": "copyright", "label": "Copyright line", "default": "All rights reserved." }
+  ]
+}
+{% endschema %}

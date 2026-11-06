@@ -1,0 +1,33 @@
+{%- comment -%}
+  KUKI sells through its stores (no online catalogue yet). Shopify still routes /products, /collections,
+  /cart, /search, /blogs — this keeps those URLs on-brand and useful instead of broken.
+{%- endcomment -%}
+<section class="page-hero" aria-labelledby="page-title" style="min-height: 70vh">
+  <div class="container">
+    <h1 class="page-hero__title" id="page-title">{{ page_title | default: shop.name | escape }}</h1>
+    {%- case request.page_type -%}
+      {%- when 'search' -%}
+        <form action="{{ routes.search_url }}" method="get" role="search" class="form" style="margin-top: 2rem; max-width: 560px">
+          <div class="field"><label for="q">{{ 'general.search' | t }}</label>
+          <div class="newsletter__inline"><input class="input" id="q" type="search" name="q" value="{{ search.terms | escape }}" maxlength="120"><button class="btn" type="submit">{{ 'general.search' | t }}</button></div></div>
+        </form>
+        {%- if search.performed -%}
+          <p class="lede" style="margin-top: 1.5rem">{{ search.results_count }} {{ 'general.results' | t }}</p>
+          <ul role="list" style="margin-top: 1rem; display: grid; gap: .5rem">{%- for item in search.results -%}<li><a class="link-arrow" href="{{ item.url }}">{{ item.title | escape }}</a></li>{%- endfor -%}</ul>
+        {%- endif -%}
+      {%- when 'article' -%}
+        <div class="rte" style="margin-top: 2rem">{{ article.content }}</div>
+      {%- when 'blog' -%}
+        <ul role="list" style="margin-top: 2rem; display: grid; gap: .75rem">{%- for a in blog.articles -%}<li><a class="link-arrow" href="{{ a.url }}">{{ a.title | escape }}</a></li>{%- endfor -%}</ul>
+      {%- when 'product' -%}
+        <div class="rte" style="margin-top: 2rem">{{ product.description }}</div>
+      {%- else -%}
+        <p class="lede" style="margin-top: 1.25rem">{{ 'generic.text' | t }}</p>
+    {%- endcase -%}
+    <div class="btn-row" style="margin-top: 1.75rem">
+      <a class="btn btn--caramel" href="{{ settings.order_url }}" target="_blank" rel="noopener">{{ settings.order_label | escape }}<span class="visually-hidden"> ({{ 'general.opens_new_window' | t }})</span></a>
+      <a class="btn btn--ghost" href="/pages/menu">{{ 'menu.full_menu' | t }}</a>
+    </div>
+  </div>
+</section>
+{% schema %}{ "name": "Generic", "settings": [] }{% endschema %}

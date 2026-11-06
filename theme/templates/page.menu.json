@@ -1,0 +1,439 @@
+{
+  "sections": {
+    "hero": {
+      "type": "page-hero",
+      "settings": {
+        "eyebrow": "Fresh from the oven · @kuki.ath",
+        "title": "Our *Menu*",
+        "text": "A small but dangerous menu of soft cookies, Kuki's & Cream cups, Kuki Rolls and coffee.",
+        "show_order": true,
+        "asset": "i-mascot-wave"
+      }
+    },
+    "menu": {
+      "type": "menu",
+      "settings": {
+        "note": "Στο KUKI δίνουμε ιδιαίτερη σημασία στην ποιότητα, χρησιμοποιώντας προσεκτικά επιλεγμένες πρώτες ύλες, premium σοκολάτες και γαλλικό βούτυρο. Τα cookies μας ψήνονται καθημερινά στα καταστήματά μας, ώστε να απολαμβάνονται φρεσκοψημένα, με τη χαρακτηριστική υφή και γεύση τους. Στο πλαίσιο της διαδικασίας παραγωγής και συντήρησης, τα cookies και οι πραλίνες μας διατηρούνται ως κατεψυγμένα προϊόντα, σε ελεγχόμενες συνθήκες, μέχρι την τελική παρασκευή και το σερβίρισμά τους.",
+        "note_lang": "el"
+      },
+      "blocks": {
+        "product_1": {
+          "type": "product",
+          "settings": {
+            "name": "Classic Kuki",
+            "category": "cookies",
+            "price": "3.60",
+            "description": "French butter, chocolate chunks and a touch of sea salt.",
+            "asset": "m-classic-kuki"
+          }
+        },
+        "product_2": {
+          "type": "product",
+          "settings": {
+            "name": "Double Chocolate Kuki",
+            "category": "cookies",
+            "price": "3.80",
+            "description": "French butter, dark and milk chocolate, finished with sea salt.",
+            "asset": "m-double-chocolate-kuki"
+          }
+        },
+        "product_3": {
+          "type": "product",
+          "settings": {
+            "name": "Belgian Kuki",
+            "category": "cookies",
+            "price": "4.20",
+            "description": "French butter, handmade biscuit praline and white chocolate.",
+            "asset": "m-belgian-kuki"
+          }
+        },
+        "product_4": {
+          "type": "product",
+          "settings": {
+            "name": "Hazelnut Kuki",
+            "category": "cookies",
+            "price": "4.70",
+            "description": "French butter, handmade gianduja, caramel and hazelnut.",
+            "asset": "m-hazelnut-kuki"
+          }
+        },
+        "product_5": {
+          "type": "product",
+          "settings": {
+            "name": "Lemon Kuki",
+            "category": "cookies",
+            "price": "4.20",
+            "description": "",
+            "asset": "m-lemon-kuki"
+          }
+        },
+        "product_6": {
+          "type": "product",
+          "settings": {
+            "name": "Tiramisu Kuki",
+            "category": "cookies",
+            "price": "4.80",
+            "description": "French butter, intense coffee ganache, mascarpone cream and cocoa.",
+            "asset": "m-tiramisu-kuki"
+          }
+        },
+        "product_7": {
+          "type": "product",
+          "settings": {
+            "name": "Kuki Dough Cheesecake",
+            "category": "cookies",
+            "price": "4.90",
+            "description": "",
+            "asset": "m-kuki-dough-cheesecake"
+          }
+        },
+        "product_8": {
+          "type": "product",
+          "settings": {
+            "name": "Fistiki Jam Kuki",
+            "category": "cookies",
+            "price": "5.70",
+            "description": "",
+            "asset": "m-fistiki-jam-kuki"
+          }
+        },
+        "product_9": {
+          "type": "product",
+          "settings": {
+            "name": "Strawberry Cloud",
+            "category": "cookies",
+            "price": "4.80",
+            "description": "",
+            "asset": "m-strawberry-cloud"
+          }
+        },
+        "product_10": {
+          "type": "product",
+          "settings": {
+            "name": "Brookie",
+            "category": "cookies",
+            "price": "6.30",
+            "description": "Our iconic brookie — fudgy brownie meets the signature cookie.",
+            "asset": "m-brookie"
+          }
+        },
+        "product_11": {
+          "type": "product",
+          "settings": {
+            "name": "Belgian Brookie & Cream",
+            "category": "cream",
+            "price": "8.20",
+            "description": "Kuki's & Cream Belgian-style dessert cup with rich chocolate layers.",
+            "asset": "m-belgian-brookie-cream"
+          }
+        },
+        "product_12": {
+          "type": "product",
+          "settings": {
+            "name": "Pistachio Brookie & Cream",
+            "category": "cream",
+            "price": "9.00",
+            "description": "Creamy pistachio layers with a soft Kuki dessert base.",
+            "asset": "m-pistachio-brookie-cream"
+          }
+        },
+        "product_13": {
+          "type": "product",
+          "settings": {
+            "name": "Hazelnut Brookie & Cream",
+            "category": "cream",
+            "price": "8.80",
+            "description": "Hazelnut cream, biscuit crunch, and a smooth Kuki finish.",
+            "asset": "m-hazelnut-brookie-cream"
+          }
+        },
+        "product_14": {
+          "type": "product",
+          "settings": {
+            "name": "Caramel Brookie & Cream",
+            "category": "cream",
+            "price": "8.80",
+            "description": "Silky caramel cream layered with the signature Kuki crumble.",
+            "asset": "m-caramel-brookie-cream"
+          }
+        },
+        "product_15": {
+          "type": "product",
+          "settings": {
+            "name": "Kuki Doh",
+            "category": "cream",
+            "price": "6.70",
+            "description": "Soft cookie dough cream with playful Kuki texture in every spoon.",
+            "asset": "m-kuki-doh"
+          }
+        },
+        "product_16": {
+          "type": "product",
+          "settings": {
+            "name": "Brookie & Cream",
+            "category": "cream",
+            "price": "6.30",
+            "description": "",
+            "asset": "m-brookie-cream"
+          }
+        },
+        "product_17": {
+          "type": "product",
+          "settings": {
+            "name": "Kuki Roll",
+            "category": "rolls",
+            "price": "4.70",
+            "description": "",
+            "asset": "m-kuki-roll"
+          }
+        },
+        "product_18": {
+          "type": "product",
+          "settings": {
+            "name": "Kuki Roll Salted Caramel",
+            "category": "rolls",
+            "price": "5.60",
+            "description": "",
+            "asset": "m-kuki-roll-salted-caramel"
+          }
+        },
+        "product_19": {
+          "type": "product",
+          "settings": {
+            "name": "Kuki Roll Belgian",
+            "category": "rolls",
+            "price": "6.20",
+            "description": "",
+            "asset": "m-kuki-roll-belgian"
+          }
+        },
+        "product_20": {
+          "type": "product",
+          "settings": {
+            "name": "Kuki Roll Fistiki",
+            "category": "rolls",
+            "price": "6.70",
+            "description": "",
+            "asset": "m-kuki-roll-fistiki"
+          }
+        },
+        "product_21": {
+          "type": "product",
+          "settings": {
+            "name": "Freddo Espresso",
+            "category": "coffee",
+            "price": "2.50",
+            "description": "Double shot of espresso over ice. Bold and refreshing.",
+            "asset": "m-freddo-espresso"
+          }
+        },
+        "product_22": {
+          "type": "product",
+          "settings": {
+            "name": "Cappuccino",
+            "category": "coffee",
+            "price": "2.40",
+            "description": "Espresso topped with steamed milk and velvety foam.",
+            "asset": "m-cappuccino"
+          }
+        },
+        "product_23": {
+          "type": "product",
+          "settings": {
+            "name": "Flat White",
+            "category": "coffee",
+            "price": "2.70",
+            "description": "Smooth espresso with silky micro-foam milk.",
+            "asset": "m-flat-white"
+          }
+        },
+        "product_24": {
+          "type": "product",
+          "settings": {
+            "name": "Espresso",
+            "category": "coffee",
+            "price": "2.20",
+            "description": "",
+            "asset": "m-espresso"
+          }
+        },
+        "product_25": {
+          "type": "product",
+          "settings": {
+            "name": "Cappuccino Latte",
+            "category": "coffee",
+            "price": "2.60",
+            "description": "",
+            "asset": "m-cappuccino-latte"
+          }
+        },
+        "product_26": {
+          "type": "product",
+          "settings": {
+            "name": "Espresso Macchiato",
+            "category": "coffee",
+            "price": "2.60",
+            "description": "",
+            "asset": "m-espresso-macchiato"
+          }
+        },
+        "product_27": {
+          "type": "product",
+          "settings": {
+            "name": "Freddo Cappuccino",
+            "category": "coffee",
+            "price": "2.60",
+            "description": "",
+            "asset": "m-freddo-cappuccino"
+          }
+        },
+        "product_28": {
+          "type": "product",
+          "settings": {
+            "name": "Salted Caramel Hot Chocolate",
+            "category": "hot_chocolate",
+            "price": "3.70",
+            "description": "Warm milk chocolate with handmade salted caramel.",
+            "asset": "m-salted-caramel-hot-chocolate"
+          }
+        }
+      },
+      "block_order": [
+        "product_1",
+        "product_2",
+        "product_3",
+        "product_4",
+        "product_5",
+        "product_6",
+        "product_7",
+        "product_8",
+        "product_9",
+        "product_10",
+        "product_11",
+        "product_12",
+        "product_13",
+        "product_14",
+        "product_15",
+        "product_16",
+        "product_17",
+        "product_18",
+        "product_19",
+        "product_20",
+        "product_21",
+        "product_22",
+        "product_23",
+        "product_24",
+        "product_25",
+        "product_26",
+        "product_27",
+        "product_28"
+      ]
+    },
+    "locations": {
+      "type": "locations",
+      "settings": {
+        "text": "Seven stores across Athens and Piraeus, each one baking fresh every day. Pick a store for directions — or let us find the closest one to you."
+      },
+      "blocks": {
+        "store_1": {
+          "type": "store",
+          "settings": {
+            "name": "Ilion",
+            "area": "Athens · West",
+            "street": "Κωλέττη 11",
+            "locality": "Ίλιον",
+            "query": "Κωλέττη 11, Ίλιον, Αθήνα",
+            "lat": "38.0335",
+            "lng": "23.7035"
+          }
+        },
+        "store_2": {
+          "type": "store",
+          "settings": {
+            "name": "Kypseli",
+            "area": "Athens · Central",
+            "street": "Ιωάννου Δροσοπούλου 93",
+            "locality": "Κυψέλη",
+            "query": "Ιωάννου Δροσοπούλου 93, Κυψέλη, Αθήνα",
+            "lat": "38.0030",
+            "lng": "23.7385"
+          }
+        },
+        "store_3": {
+          "type": "store",
+          "settings": {
+            "name": "Panormou",
+            "area": "Athens · North",
+            "street": "Αλέξη Παυλή 38Γ",
+            "locality": "Πάνορμου",
+            "query": "Αλέξη Παυλή 38Γ, Πάνορμου, Αθήνα",
+            "lat": "37.9935",
+            "lng": "23.7640"
+          }
+        },
+        "store_4": {
+          "type": "store",
+          "settings": {
+            "name": "Piraeus",
+            "area": "",
+            "street": "Βούλγαρη 134",
+            "locality": "Πειραιάς",
+            "query": "Βούλγαρη 134, Πειραιάς",
+            "lat": "37.9520",
+            "lng": "23.6480"
+          }
+        },
+        "store_5": {
+          "type": "store",
+          "settings": {
+            "name": "Kifisia",
+            "area": "Athens · North",
+            "street": "Λεωφόρος Κηφισίας 238–240",
+            "locality": "Κηφισιά",
+            "query": "Λεωφόρος Κηφισίας 238–240, Κηφισιά",
+            "lat": "38.0280",
+            "lng": "23.7900"
+          }
+        },
+        "store_6": {
+          "type": "store",
+          "settings": {
+            "name": "Neos Kosmos",
+            "area": "Athens · South",
+            "street": "Γουβέλη 12",
+            "locality": "Νέος Κόσμος",
+            "query": "Γουβέλη 12, Νέος Κόσμος, Αθήνα",
+            "lat": "37.9575",
+            "lng": "23.7290"
+          }
+        },
+        "store_7": {
+          "type": "store",
+          "settings": {
+            "name": "Glyfada",
+            "area": "Athens · South",
+            "street": "Μαραγκού 8",
+            "locality": "Γλυφάδα",
+            "query": "Μαραγκού 8, Γλυφάδα",
+            "lat": "37.8650",
+            "lng": "23.7530"
+          }
+        }
+      },
+      "block_order": [
+        "store_1",
+        "store_2",
+        "store_3",
+        "store_4",
+        "store_5",
+        "store_6",
+        "store_7"
+      ]
+    }
+  },
+  "order": [
+    "hero",
+    "menu",
+    "locations"
+  ]
+}

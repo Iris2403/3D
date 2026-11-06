@@ -1,0 +1,11 @@
+{%- comment -%} Shopify form result banner (server-side result of the native form). Focused by JS after redirect. {%- endcomment -%}
+{%- if form.posted_successfully? -%}
+  <div class="form-status form-status--ok" role="status" tabindex="-1" data-form-status>
+    {% render 'kuki-icon', name: 'check' %}<p>{{ success | escape }}</p>
+  </div>
+{%- elsif form.errors -%}
+  <div class="form-status form-status--err" role="alert" tabindex="-1" data-form-status>
+    {% render 'kuki-icon', name: 'alert' %}
+    <div><p>{{ 'forms.error_intro' | t }}</p>{{ form.errors | default_errors }}</div>
+  </div>
+{%- endif -%}

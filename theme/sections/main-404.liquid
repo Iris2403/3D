@@ -1,0 +1,13 @@
+<section class="page-hero" aria-labelledby="page-title" style="min-height: 80vh">
+  <div class="container">
+    <p class="eyebrow">404</p>
+    <h1 class="page-hero__title" id="page-title" style="margin-top: 1rem">{{ 'not_found.title' | t }}</h1>
+    <p class="lede" style="margin-top: 1.25rem">{{ 'not_found.text' | t }}</p>
+    <div class="btn-row" style="margin-top: 1.75rem">
+      <a class="btn" href="{{ routes.root_url }}">{{ 'not_found.home' | t }}</a>
+      <a class="btn btn--ghost" href="/pages/menu">{{ 'menu.full_menu' | t }}</a>
+    </div>
+  </div>
+  {%- render 'kuki-picture', name: 'i-mascot-face', alt: '', class: 'page-hero__mascot', sizes: '220px' -%}
+</section>
+{% schema %}{ "name": "404", "settings": [] }{% endschema %}

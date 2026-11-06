@@ -1,0 +1,57 @@
+{%- comment -%} Native <details>/<summary> accordion: keyboard + screen-reader accessible with zero JS. Emits FAQPage JSON-LD from the same content. {%- endcomment -%}
+<section class="section" id="faq" aria-labelledby="faq-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+      <h2 class="h1" id="faq-title" data-split>{% render 'kuki-split-text', text: section.settings.title %}</h2>
+    </div>
+    <div class="faq__grid">
+      <div class="faq__list">
+        {%- for block in section.blocks -%}
+          <details class="faq__item" data-reveal style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            <summary>{{ block.settings.question | escape }}<span class="faq__icon" aria-hidden="true"></span></summary>
+            <div class="faq__answer"><p>{{ block.settings.answer | escape }}</p></div>
+          </details>
+        {%- endfor -%}
+      </div>
+      <aside class="faq__contact" data-reveal aria-labelledby="faq-contact-{{ section.id }}">
+        {%- render 'kuki-picture', name: 'i-mascot-milk', alt: '', sizes: '120px' -%}
+        <h3 class="h3" id="faq-contact-{{ section.id }}">{{ section.settings.contact_title | escape }}</h3>
+        <p>{{ section.settings.contact_text | escape }}</p>
+        <div class="btn-row">
+          {%- if settings.instagram_url != blank -%}
+            <a class="btn btn--sm" href="{{ settings.instagram_url }}" target="_blank" rel="noopener">{% render 'kuki-icon', name: 'instagram', class: 'btn__icon' %} {{ 'faq.message_us' | t }}<span class="visually-hidden"> ({{ 'general.opens_new_window' | t }})</span></a>
+          {%- endif -%}
+          <a class="btn btn--sm btn--ghost" href="/pages/contact">{{ 'faq.contact_form' | t }}</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- for block in section.blocks -%}
+    { "@type": "Question", "name": {{ block.settings.question | json }}, "acceptedAnswer": { "@type": "Answer", "text": {{ block.settings.answer | json }} } }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Everything you need to know about our cookies" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Frequently asked *questions*" },
+    { "type": "text", "id": "contact_title", "label": "Contact card title", "default": "Still have questions?" },
+    { "type": "textarea", "id": "contact_text", "label": "Contact card text" }
+  ],
+  "blocks": [{ "type": "question", "name": "Question", "settings": [
+    { "type": "text", "id": "question", "label": "Question" },
+    { "type": "textarea", "id": "answer", "label": "Answer" }
+  ] }],
+  "presets": [{ "name": "FAQ" }]
+}
+{% endschema %}

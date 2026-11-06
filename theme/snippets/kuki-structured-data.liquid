@@ -1,0 +1,27 @@
+{%- comment -%}
+  Site-wide Organization + WebSite JSON-LD. Store-level Bakery entities are emitted by the locations
+  section and the Menu by the menu section — only from real, merchant-entered data. No ratings,
+  reviews or opening hours are emitted (none are published by KUKI).
+{%- endcomment -%}
+{%- liquid
+  assign sameas = ''
+  if settings.instagram_url != blank
+    assign sameas = settings.instagram_url
+  endif
+-%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": {{ shop.url | append: '/#organization' | json }},
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | json }},
+    "logo": {{ 'apple-touch-icon.png' | asset_url | prepend: 'https:' | json }}
+    {%- if sameas != blank %}, "sameAs": [{{ sameas | json }}]{% endif %}
+  }
+</script>
+{%- if template.name == 'index' -%}
+<script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "WebSite", "name": {{ shop.name | json }}, "url": {{ shop.url | json }} }
+</script>
+{%- endif -%}

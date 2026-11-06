@@ -1,0 +1,46 @@
+{%- comment -%} "Baked with Love, Served with Joy" — editorial intro + quality pillars (copy from the existing KUKI site). {%- endcomment -%}
+<section class="section story" id="{{ section.settings.anchor | default: 'story' }}" aria-labelledby="story-title-{{ section.id }}">
+  <div class="container story__grid">
+    <div class="story__visual">
+      <figure class="media media--parallax" data-clip data-parallax="0.12">
+        {%- render 'kuki-picture', image: section.settings.image_1, name: 'g-assortment', alt: section.settings.image_1_alt, sizes: '(min-width: 900px) 33vw, 66vw' -%}
+      </figure>
+      <figure class="media" data-reveal="scale" style="--d: 2">
+        {%- render 'kuki-picture', image: section.settings.image_2, name: 'g-counter', alt: section.settings.image_2_alt, sizes: '(min-width: 900px) 25vw, 50vw' -%}
+      </figure>
+      <div class="story__stamp" aria-hidden="true"><span>100%<small>FRESH</small></span></div>
+    </div>
+    <div>
+      <p class="eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+      <h2 class="h1" id="story-title-{{ section.id }}" data-split style="margin-top: 1rem">{% render 'kuki-split-text', text: section.settings.title %}</h2>
+      <p class="lede" style="margin-top: 1.5rem" data-reveal>{{ section.settings.text | escape }}</p>
+      <ol class="pillars" role="list">
+        {%- for block in section.blocks -%}
+          <li class="pillar" data-reveal style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            <span class="pillar__num" aria-hidden="true">{{ forloop.index | prepend: '0' }}</span>
+            <h3>{{ block.settings.title | escape }}</h3>
+            <p>{{ block.settings.text | escape }}</p>
+          </li>
+        {%- endfor -%}
+      </ol>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Story & pillars",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "story" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Handcrafted in Athens" },
+    { "type": "text", "id": "title", "label": "Title (wrap words in *asterisks* for italics)", "default": "Baked with *Love,* Served with *Joy*" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "image_picker", "id": "image_1", "label": "Large image" },
+    { "type": "text", "id": "image_1_alt", "label": "Large image alt", "default": "Assorted KUKI cookies and brookies in their sage green boxes" },
+    { "type": "image_picker", "id": "image_2", "label": "Small image" },
+    { "type": "text", "id": "image_2_alt", "label": "Small image alt", "default": "Cookies on display at a KUKI store counter" }
+  ],
+  "blocks": [{ "type": "pillar", "name": "Pillar", "settings": [ { "type": "text", "id": "title", "label": "Title" }, { "type": "textarea", "id": "text", "label": "Text" } ] }],
+  "max_blocks": 6,
+  "presets": [{ "name": "Story & pillars" }]
+}
+{% endschema %}

@@ -1,0 +1,127 @@
+{
+  "sections": {
+    "hero": {
+      "type": "page-hero",
+      "settings": {
+        "eyebrow": "We're hiring",
+        "title": "Make good things *with us.*",
+        "text": "Kuki is growing, and we’re looking for warm, curious people to help us make every visit feel a little more special.",
+        "asset": "i-mascot-thumbs"
+      }
+    },
+    "careers": {
+      "type": "careers",
+      "settings": {
+        "stores_text": "Every store has its own rhythm. Choose the one that feels like you.",
+        "form_text": "Choose a store, share a little about yourself, and our team will be in touch when there’s a match. Even if your store is not hiring today, send your details and we’ll keep you in mind."
+      },
+      "blocks": {
+        "store_1": {
+          "type": "store",
+          "settings": {
+            "store": "Ilion",
+            "area": "Athens · West",
+            "hiring": true,
+            "jobs": "Κεντρικό παρασκευαστήριο · Ψάχνουμε για θέση ζαχαροπλάστη",
+            "text": "Bring warmth, pace, and a little magic to every Kuki visit."
+          }
+        },
+        "store_2": {
+          "type": "store",
+          "settings": {
+            "store": "Kypseli",
+            "area": "Athens · Central",
+            "hiring": true,
+            "jobs": "Βοηθός ζαχαροπλάστη · Ταμίας · Barista",
+            "text": "Help us make the neighbourhood’s favourite cookie stop feel like home."
+          }
+        },
+        "store_3": {
+          "type": "store",
+          "settings": {
+            "store": "Panormou",
+            "area": "Athens · North",
+            "hiring": true,
+            "jobs": "Βοηθός ζαχαροπλάστη · Ταμίας · Barista",
+            "text": "A people-first role for someone who loves a busy counter and a good story."
+          }
+        },
+        "store_4": {
+          "type": "store",
+          "settings": {
+            "store": "Piraeus",
+            "area": "",
+            "hiring": true,
+            "jobs": "Βοηθός ζαχαροπλάστη · Ταμίας · Barista",
+            "text": "Make every hand-off feel personal, generous, and unmistakably Kuki."
+          }
+        },
+        "store_5": {
+          "type": "store",
+          "settings": {
+            "store": "Kifisia",
+            "area": "Athens · North",
+            "hiring": false,
+            "jobs": "Βοηθός ζαχαροπλάστη · Ταμίας · Barista",
+            "text": "No open roles today, but we would love to hear from great people."
+          }
+        },
+        "store_6": {
+          "type": "store",
+          "settings": {
+            "store": "Neos Kosmos",
+            "area": "Athens · South",
+            "hiring": true,
+            "jobs": "Βοηθός ζαχαροπλάστη · Ταμίας · Barista",
+            "text": "Tell us what you do best and we will keep your CV close."
+          }
+        },
+        "store_7": {
+          "type": "store",
+          "settings": {
+            "store": "Thessaloniki",
+            "area": "",
+            "hiring": true,
+            "jobs": "Βοηθός ζαχαροπλάστη · Ταμίας · Barista",
+            "text": "Join the next chapter as Kuki brings the good stuff north."
+          }
+        },
+        "store_8": {
+          "type": "store",
+          "settings": {
+            "store": "Glyfada",
+            "area": "Athens · South",
+            "hiring": true,
+            "jobs": "Βοηθός ζαχαροπλάστη · Ταμίας · Barista",
+            "text": "A bright, welcoming role with plenty of room to grow."
+          }
+        },
+        "store_9": {
+          "type": "store",
+          "settings": {
+            "store": "Manchester",
+            "area": "",
+            "hiring": true,
+            "jobs": "Βοηθός ζαχαροπλάστη · Ταμίας · Barista",
+            "text": "Help us make soft, buttery, ridiculously good cookies across the water."
+          }
+        }
+      },
+      "block_order": [
+        "store_1",
+        "store_2",
+        "store_3",
+        "store_4",
+        "store_5",
+        "store_6",
+        "store_7",
+        "store_8",
+        "store_9"
+      ]
+    }
+  },
+  "order": [
+    "hero",
+    "careers"
+  ]
+}

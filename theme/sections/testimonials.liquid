@@ -1,0 +1,47 @@
+{%- comment -%}
+  Only genuine KUKI customer reviews belong here. The previous theme contained two unrelated
+  wine-tour reviews (placeholder content) — they have been removed. Add real reviews as blocks.
+{%- endcomment -%}
+{%- if section.blocks.size > 0 -%}
+<section class="section on-cream" id="reviews" aria-labelledby="reviews-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+      <h2 class="h1" id="reviews-title" data-split>{% render 'kuki-split-text', text: section.settings.title %}</h2>
+    </div>
+    <div class="reviews__grid{% if section.blocks.size > 1 %} reviews__grid--many{% endif %}">
+      {%- if section.blocks.size == 1 -%}
+        {%- render 'kuki-picture', name: 'i-mascot-crowd', alt: '', class: 'reviews__mascot', sizes: '260px' -%}
+      {%- endif -%}
+      {%- for block in section.blocks -%}
+        <figure class="review" data-reveal style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <div class="review__mark" aria-hidden="true">“</div>
+          <blockquote><p>{{ block.settings.quote | escape }}</p></blockquote>
+          <figcaption>
+            <span class="review__avatar" aria-hidden="true">{{ block.settings.author | slice: 0 }}</span>
+            <span class="review__who"><strong>{{ block.settings.author | escape }}</strong>
+              <span>{%- if block.settings.source_url != blank -%}<a href="{{ block.settings.source_url }}" target="_blank" rel="noopener">{{ block.settings.source | escape }}</a>{%- else -%}{{ block.settings.source | escape }}{%- endif -%}</span>
+            </span>
+          </figcaption>
+        </figure>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Testimonials" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Gone in *seconds.* Remembered for days." }
+  ],
+  "blocks": [{ "type": "review", "name": "Review", "settings": [
+    { "type": "textarea", "id": "quote", "label": "Review text (verbatim)" },
+    { "type": "text", "id": "author", "label": "Author" },
+    { "type": "text", "id": "source", "label": "Source", "default": "Google Reviews" },
+    { "type": "url", "id": "source_url", "label": "Link to the review (optional)" }
+  ] }],
+  "presets": [{ "name": "Testimonials" }]
+}
+{% endschema %}

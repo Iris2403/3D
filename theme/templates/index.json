@@ -1,0 +1,594 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "cta_secondary_url": "#lineup"
+      },
+      "blocks": {
+        "badge_1": {
+          "type": "badge",
+          "settings": {
+            "icon": "sun",
+            "text": "Baked fresh daily"
+          }
+        },
+        "badge_2": {
+          "type": "badge",
+          "settings": {
+            "icon": "whisk",
+            "text": "Handmade pralines & caramel"
+          }
+        },
+        "badge_3": {
+          "type": "badge",
+          "settings": {
+            "icon": "wheat",
+            "text": "French butter"
+          }
+        }
+      },
+      "block_order": [
+        "badge_1",
+        "badge_2",
+        "badge_3"
+      ]
+    },
+    "marquee": {
+      "type": "marquee",
+      "settings": {
+        "speed": 40
+      },
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "text": "Baked fresh daily"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "text": "Handmade pralines"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "text": "French butter"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "text": "Premium chocolate"
+          }
+        },
+        "item_5": {
+          "type": "item",
+          "settings": {
+            "text": "Roasted in-house"
+          }
+        },
+        "item_6": {
+          "type": "item",
+          "settings": {
+            "text": "Made in Athens"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4",
+        "item_5",
+        "item_6"
+      ]
+    },
+    "story": {
+      "type": "story",
+      "settings": {
+        "title": "Baked with *Love,* Served with *Joy*",
+        "text": "At KUKI, every cookie is handcrafted to turn a simple break into something worth craving. Made with rich butter, premium chocolate, handmade fillings, and a touch of fleur de sel, each bite is soft, bold, and full of comfort."
+      },
+      "blocks": {
+        "pillar_1": {
+          "type": "pillar",
+          "settings": {
+            "title": "Premium Ingredients",
+            "text": "Selected butter, quality chocolate, and carefully sourced ingredients in every recipe."
+          }
+        },
+        "pillar_2": {
+          "type": "pillar",
+          "settings": {
+            "title": "Expert Craft",
+            "text": "Handcrafted cookies made with precision, technique, and attention to every detail."
+          }
+        },
+        "pillar_3": {
+          "type": "pillar",
+          "settings": {
+            "title": "Quality First",
+            "text": "Every recipe is designed to deliver consistency, balance, and a premium taste experience."
+          }
+        },
+        "pillar_4": {
+          "type": "pillar",
+          "settings": {
+            "title": "Baked Daily",
+            "text": "Prepared daily to ensure maximum freshness, softness, and flavor in every bite."
+          }
+        }
+      },
+      "block_order": [
+        "pillar_1",
+        "pillar_2",
+        "pillar_3",
+        "pillar_4"
+      ]
+    },
+    "lineup": {
+      "type": "lineup",
+      "settings": {
+        "link_url": "/pages/menu"
+      },
+      "blocks": {
+        "product_1": {
+          "type": "product",
+          "settings": {
+            "name": "Classic Kuki",
+            "category": "cookies",
+            "price": "3.60",
+            "description": "French butter, chocolate chunks and a touch of sea salt.",
+            "asset": "m-classic-kuki"
+          }
+        },
+        "product_2": {
+          "type": "product",
+          "settings": {
+            "name": "Double Chocolate Kuki",
+            "category": "cookies",
+            "price": "3.80",
+            "description": "French butter, dark and milk chocolate, finished with sea salt.",
+            "asset": "m-double-chocolate-kuki"
+          }
+        },
+        "product_3": {
+          "type": "product",
+          "settings": {
+            "name": "Belgian Kuki",
+            "category": "cookies",
+            "price": "4.20",
+            "description": "French butter, handmade biscuit praline and white chocolate.",
+            "asset": "m-belgian-kuki"
+          }
+        },
+        "product_4": {
+          "type": "product",
+          "settings": {
+            "name": "Hazelnut Kuki",
+            "category": "cookies",
+            "price": "4.70",
+            "description": "French butter, handmade gianduja, caramel and hazelnut.",
+            "asset": "m-hazelnut-kuki"
+          }
+        },
+        "product_5": {
+          "type": "product",
+          "settings": {
+            "name": "Lemon Kuki",
+            "category": "cookies",
+            "price": "4.20",
+            "description": "",
+            "asset": "m-lemon-kuki"
+          }
+        },
+        "product_6": {
+          "type": "product",
+          "settings": {
+            "name": "Tiramisu Kuki",
+            "category": "cookies",
+            "price": "4.80",
+            "description": "French butter, intense coffee ganache, mascarpone cream and cocoa.",
+            "asset": "m-tiramisu-kuki"
+          }
+        },
+        "product_7": {
+          "type": "product",
+          "settings": {
+            "name": "Kuki Dough Cheesecake",
+            "category": "cookies",
+            "price": "4.90",
+            "description": "",
+            "asset": "m-kuki-dough-cheesecake"
+          }
+        },
+        "product_8": {
+          "type": "product",
+          "settings": {
+            "name": "Fistiki Jam Kuki",
+            "category": "cookies",
+            "price": "5.70",
+            "description": "",
+            "asset": "m-fistiki-jam-kuki"
+          }
+        },
+        "product_9": {
+          "type": "product",
+          "settings": {
+            "name": "Strawberry Cloud",
+            "category": "cookies",
+            "price": "4.80",
+            "description": "",
+            "asset": "m-strawberry-cloud"
+          }
+        },
+        "product_10": {
+          "type": "product",
+          "settings": {
+            "name": "Brookie",
+            "category": "cookies",
+            "price": "6.30",
+            "description": "Our iconic brookie — fudgy brownie meets the signature cookie.",
+            "asset": "m-brookie"
+          }
+        }
+      },
+      "block_order": [
+        "product_1",
+        "product_2",
+        "product_3",
+        "product_4",
+        "product_5",
+        "product_6",
+        "product_7",
+        "product_8",
+        "product_9",
+        "product_10"
+      ]
+    },
+    "about": {
+      "type": "about",
+      "settings": {
+        "quote": "We don't do *average.*",
+        "text": "Every cookie at Kuki is made entirely in-house — from roasting the nuts to crafting the pralines and caramel from scratch. No shortcuts. No compromises. Just cookies that make you stop mid-bite and go “wait, what.”"
+      },
+      "blocks": {
+        "fact_1": {
+          "type": "fact",
+          "settings": {
+            "icon": "whisk",
+            "title": "Made in-house",
+            "text": "From roasting the nuts to the last crumb."
+          }
+        },
+        "fact_2": {
+          "type": "fact",
+          "settings": {
+            "icon": "badge",
+            "title": "Handmade pralines & caramel",
+            "text": "Crafted from scratch."
+          }
+        },
+        "fact_3": {
+          "type": "fact",
+          "settings": {
+            "icon": "wheat",
+            "title": "French butter & premium chocolate",
+            "text": "Carefully selected ingredients."
+          }
+        },
+        "fact_4": {
+          "type": "fact",
+          "settings": {
+            "icon": "sun",
+            "title": "Baked daily in our stores",
+            "text": "Enjoyed fresh, soft and full of flavour."
+          }
+        }
+      },
+      "block_order": [
+        "fact_1",
+        "fact_2",
+        "fact_3",
+        "fact_4"
+      ]
+    },
+    "process": {
+      "type": "process",
+      "settings": {},
+      "blocks": {
+        "step_1": {
+          "type": "step",
+          "settings": {
+            "kicker": "Ingredient Selection",
+            "title": "Premium Sourcing",
+            "text": "We carefully select high-quality ingredients from trusted suppliers to ensure every cookie starts with the best foundation.",
+            "asset": "i-mascot-cookie",
+            "image_alt": "KUKI mascot holding up a cookie"
+          }
+        },
+        "step_2": {
+          "type": "step",
+          "settings": {
+            "kicker": "Craft & Preparation",
+            "title": "Consistent Process",
+            "text": "Every batch follows a precise method, balancing flavor and texture to deliver the same perfect result every time.",
+            "asset": "i-mascot-drink",
+            "image_alt": "KUKI mascot enjoying a drink"
+          }
+        },
+        "step_3": {
+          "type": "step",
+          "settings": {
+            "kicker": "Final Quality Check",
+            "title": "Freshness Guaranteed",
+            "text": "Before reaching you, each cookie is checked to meet our standards, ensuring freshness, taste, and satisfaction in every bite.",
+            "asset": "i-mascot-thumbs",
+            "image_alt": "KUKI mascot giving a thumbs up"
+          }
+        }
+      },
+      "block_order": [
+        "step_1",
+        "step_2",
+        "step_3"
+      ]
+    },
+    "reviews": {
+      "type": "testimonials",
+      "settings": {},
+      "blocks": {
+        "review_1": {
+          "type": "review",
+          "settings": {
+            "quote": "Excellent experience. The service was polite, pleasant and very friendly, with a desire to serve the customer properly. The quality of the cookies is truly incredible. I took one cookie from each flavor and they were all the same: delicious, crispy and fresh. Honestly, it is difficult to distinguish which was my favorite.",
+            "author": "George A.",
+            "source": "Google Reviews"
+          }
+        }
+      },
+      "block_order": [
+        "review_1"
+      ]
+    },
+    "locations": {
+      "type": "locations",
+      "settings": {
+        "text": "Seven stores across Athens and Piraeus, each one baking fresh every day. Pick a store for directions — or let us find the closest one to you."
+      },
+      "blocks": {
+        "store_1": {
+          "type": "store",
+          "settings": {
+            "name": "Ilion",
+            "area": "Athens · West",
+            "street": "Κωλέττη 11",
+            "locality": "Ίλιον",
+            "query": "Κωλέττη 11, Ίλιον, Αθήνα",
+            "lat": "38.0335",
+            "lng": "23.7035"
+          }
+        },
+        "store_2": {
+          "type": "store",
+          "settings": {
+            "name": "Kypseli",
+            "area": "Athens · Central",
+            "street": "Ιωάννου Δροσοπούλου 93",
+            "locality": "Κυψέλη",
+            "query": "Ιωάννου Δροσοπούλου 93, Κυψέλη, Αθήνα",
+            "lat": "38.0030",
+            "lng": "23.7385"
+          }
+        },
+        "store_3": {
+          "type": "store",
+          "settings": {
+            "name": "Panormou",
+            "area": "Athens · North",
+            "street": "Αλέξη Παυλή 38Γ",
+            "locality": "Πάνορμου",
+            "query": "Αλέξη Παυλή 38Γ, Πάνορμου, Αθήνα",
+            "lat": "37.9935",
+            "lng": "23.7640"
+          }
+        },
+        "store_4": {
+          "type": "store",
+          "settings": {
+            "name": "Piraeus",
+            "area": "",
+            "street": "Βούλγαρη 134",
+            "locality": "Πειραιάς",
+            "query": "Βούλγαρη 134, Πειραιάς",
+            "lat": "37.9520",
+            "lng": "23.6480"
+          }
+        },
+        "store_5": {
+          "type": "store",
+          "settings": {
+            "name": "Kifisia",
+            "area": "Athens · North",
+            "street": "Λεωφόρος Κηφισίας 238–240",
+            "locality": "Κηφισιά",
+            "query": "Λεωφόρος Κηφισίας 238–240, Κηφισιά",
+            "lat": "38.0280",
+            "lng": "23.7900"
+          }
+        },
+        "store_6": {
+          "type": "store",
+          "settings": {
+            "name": "Neos Kosmos",
+            "area": "Athens · South",
+            "street": "Γουβέλη 12",
+            "locality": "Νέος Κόσμος",
+            "query": "Γουβέλη 12, Νέος Κόσμος, Αθήνα",
+            "lat": "37.9575",
+            "lng": "23.7290"
+          }
+        },
+        "store_7": {
+          "type": "store",
+          "settings": {
+            "name": "Glyfada",
+            "area": "Athens · South",
+            "street": "Μαραγκού 8",
+            "locality": "Γλυφάδα",
+            "query": "Μαραγκού 8, Γλυφάδα",
+            "lat": "37.8650",
+            "lng": "23.7530"
+          }
+        }
+      },
+      "block_order": [
+        "store_1",
+        "store_2",
+        "store_3",
+        "store_4",
+        "store_5",
+        "store_6",
+        "store_7"
+      ]
+    },
+    "gallery": {
+      "type": "gallery",
+      "settings": {
+        "title": "Join the *community*",
+        "text": "Fresh out of the oven, straight onto your feed. See what we're baking at @kuki.ath.",
+        "link_url": "/pages/gallery",
+        "background": "cream"
+      },
+      "blocks": {
+        "image_1": {
+          "type": "image",
+          "settings": {
+            "asset": "g-flatlay",
+            "alt": "Flat lay of assorted KUKI cookies and brookies beside a branded box"
+          }
+        },
+        "image_2": {
+          "type": "image",
+          "settings": {
+            "asset": "g-cup-hand",
+            "alt": "A KUKI dessert cup with a spoon, held up inside the store"
+          }
+        },
+        "image_3": {
+          "type": "image",
+          "settings": {
+            "asset": "g-box-pistachio",
+            "alt": "A cookie topped with pistachio cream on a sage green KUKI box"
+          }
+        },
+        "image_4": {
+          "type": "image",
+          "settings": {
+            "asset": "g-selection",
+            "alt": "Close-up of a selection of KUKI cookies, one topped with pink cream"
+          }
+        },
+        "image_5": {
+          "type": "image",
+          "settings": {
+            "asset": "g-cups-store",
+            "alt": "Layered Kuki's & Cream dessert cups in the store"
+          }
+        },
+        "image_6": {
+          "type": "image",
+          "settings": {
+            "asset": "g-swirl-box",
+            "alt": "A cookie with a chocolate cream swirl on a KUKI box"
+          }
+        },
+        "image_7": {
+          "type": "image",
+          "settings": {
+            "asset": "g-mix",
+            "alt": "Assorted KUKI cookies and brownies arranged on a table"
+          }
+        },
+        "image_8": {
+          "type": "image",
+          "settings": {
+            "asset": "g-cup-caramel",
+            "alt": "A caramel Kuki's & Cream cup held in hand"
+          }
+        }
+      },
+      "block_order": [
+        "image_1",
+        "image_2",
+        "image_3",
+        "image_4",
+        "image_5",
+        "image_6",
+        "image_7",
+        "image_8"
+      ]
+    },
+    "franchise": {
+      "type": "cta-band",
+      "settings": {
+        "url": "/pages/contact"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {
+        "contact_text": "Dietary needs, allergies, events or corporate gifts — message us and our team will be happy to help."
+      },
+      "blocks": {
+        "question_1": {
+          "type": "question",
+          "settings": {
+            "question": "Do you offer vegan or gluten-free options?",
+            "answer": "Yes. We offer selected vegan and gluten-free cookie options to accommodate different dietary preferences. Availability may vary depending on the season and product range. If you have specific dietary requirements or allergies, please contact us before placing your order and our team will be happy to assist."
+          }
+        },
+        "question_2": {
+          "type": "question",
+          "settings": {
+            "question": "How long do cookies stay fresh?",
+            "answer": "Our cookies are baked fresh daily for the best taste and texture. We recommend enjoying them within 3–5 days of purchase when stored in an airtight container at room temperature. For longer storage, cookies can be frozen and enjoyed later."
+          }
+        },
+        "question_3": {
+          "type": "question",
+          "settings": {
+            "question": "Can I order cookies for events or corporate gifts?",
+            "answer": "Absolutely. KUKI Athens offers custom cookie orders for corporate events, business gifts, celebrations, weddings, birthdays, and special occasions. We can accommodate larger quantities and discuss customized packaging or branding options depending on your requirements."
+          }
+        }
+      },
+      "block_order": [
+        "question_1",
+        "question_2",
+        "question_3"
+      ]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "marquee",
+    "story",
+    "lineup",
+    "about",
+    "process",
+    "reviews",
+    "locations",
+    "gallery",
+    "franchise",
+    "faq",
+    "newsletter"
+  ]
+}

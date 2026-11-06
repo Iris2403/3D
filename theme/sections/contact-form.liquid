@@ -1,0 +1,64 @@
+{%- comment -%}
+  Franchise / business enquiry — Shopify native contact form (emails the store's sender address).
+  Same field names as the previous theme so existing email filters keep working.
+{%- endcomment -%}
+<section class="section" style="padding-top: 0" aria-labelledby="contact-form-title">
+  <div class="container split">
+    <div class="split__sticky">
+      <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      <h2 class="h2" id="contact-form-title" style="margin-top: 1rem">{{ section.settings.title | escape }}</h2>
+      <p class="lede" style="margin-top: 1rem">{{ section.settings.text | escape }}</p>
+      {%- if settings.instagram_url != blank -%}
+        <p style="margin-top: 1.5rem"><a class="link-arrow" href="{{ settings.instagram_url }}" target="_blank" rel="noopener">{% render 'kuki-icon', name: 'instagram' %} {{ 'faq.message_us' | t }}<span class="visually-hidden"> ({{ 'general.opens_new_window' | t }})</span></a></p>
+      {%- endif -%}
+    </div>
+    <div class="form-card">
+      {%- form 'contact', id: 'kuki-contact-form', class: 'form', novalidate: 'novalidate', data-validate: '' -%}
+        {%- render 'kuki-form-status', form: form, success: section.settings.success -%}
+        <input type="hidden" name="contact[Source]" value="Contact form">
+        <div class="hp" aria-hidden="true"><label for="cf-website">Website</label><input id="cf-website" type="text" name="website" tabindex="-1" autocomplete="off" data-honeypot></div>
+        <div class="form__row form__row--2">
+          <div class="field">
+            <label for="cf-name">{{ 'forms.name' | t }} <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="cf-name" type="text" name="contact[name]" required maxlength="120" autocomplete="name" aria-describedby="cf-name-err" value="{{ form.name | escape }}">
+            <p class="field__error" id="cf-name-err" data-error hidden></p>
+          </div>
+          <div class="field">
+            <label for="cf-email">{{ 'forms.email' | t }} <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="cf-email" type="email" name="contact[email]" required maxlength="254" autocomplete="email" inputmode="email" spellcheck="false" aria-describedby="cf-email-err" value="{{ form.email | escape }}">
+            <p class="field__error" id="cf-email-err" data-error hidden></p>
+          </div>
+        </div>
+        <div class="form__row form__row--2">
+          <div class="field">
+            <label for="cf-city">{{ 'forms.city' | t }}</label>
+            <input class="input" id="cf-city" type="text" name="contact[CITY]" maxlength="80" autocomplete="address-level2">
+          </div>
+          <div class="field">
+            <label for="cf-budget">{{ 'forms.budget' | t }}</label>
+            <input class="input" id="cf-budget" type="text" name="contact[Budget]" maxlength="80">
+          </div>
+        </div>
+        <div class="field">
+          <label for="cf-body">{{ 'forms.more_info' | t }} <span class="req" aria-hidden="true">*</span></label>
+          <textarea class="input" id="cf-body" name="contact[body]" required minlength="10" maxlength="3000" aria-describedby="cf-body-err">{{ form.body | escape }}</textarea>
+          <p class="field__error" id="cf-body-err" data-error hidden></p>
+        </div>
+        <p class="privacy-note">{{ 'forms.contact_privacy' | t }} <a href="/policies/privacy-policy">{{ 'footer.privacy' | t }}</a>.</p>
+        <div><button class="btn btn--caramel" type="submit">{{ 'forms.submit' | t }} {% render 'kuki-icon', name: 'arrow', class: 'btn__icon' %}</button></div>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Franchise contact form",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Business & franchise" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Interested in opening a Kuki?" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "text", "id": "success", "label": "Success message", "default": "Thanks! Your message has been sent. We'll be in touch soon." }
+  ],
+  "presets": [{ "name": "Franchise contact form" }]
+}
+{% endschema %}

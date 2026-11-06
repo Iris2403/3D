@@ -1,0 +1,51 @@
+<section class="section about on-dark" id="about" aria-labelledby="about-title">
+  <div class="container about__grid">
+    <div>
+      <p class="eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+      <h2 class="visually-hidden" id="about-title">{{ section.settings.eyebrow | escape }}</h2>
+      <p class="about__quote" data-split style="margin-top: 1.25rem">{% render 'kuki-split-text', text: section.settings.quote %}</p>
+      <p class="lede" style="margin-top: 1.5rem; max-width: 46ch" data-reveal>{{ section.settings.text | escape }}</p>
+      <ul class="about__facts" role="list">
+        {%- for block in section.blocks -%}
+          <li class="fact" data-reveal style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            {% render 'kuki-icon', name: block.settings.icon %}
+            <strong>{{ block.settings.title | escape }}</strong>
+            <span>{{ block.settings.text | escape }}</span>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+    <div class="about__media">
+      <figure class="media" data-clip>
+        <video data-autoplay muted playsinline loop preload="none" width="720" height="900"
+          poster="{{ 'v-store-opening-poster.webp' | asset_url }}" aria-label="{{ section.settings.video_1_label | escape }}">
+          <source src="{{ 'v-store-opening.mp4' | asset_url }}" type="video/mp4">
+        </video>
+      </figure>
+      <figure class="media media--parallax" data-reveal style="--d: 2" data-parallax="0.08">
+        {%- render 'kuki-picture', image: section.settings.image, name: 'g-cup-held', alt: section.settings.image_alt, sizes: '(min-width: 960px) 25vw, 50vw' -%}
+      </figure>
+      {%- render 'kuki-picture', name: 'c-cookie-3', alt: '', class: 'about__float', sizes: '220px' -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "About KUKI",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "About Kuki" },
+    { "type": "textarea", "id": "quote", "label": "Statement (wrap words in *asterisks* for italics)" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "text", "id": "video_1_label", "label": "Video description", "default": "Animation: the KUKI mascot opening the shop shutters" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "image_alt", "label": "Image alt", "default": "A KUKI dessert cup held up in store" }
+  ],
+  "blocks": [{ "type": "fact", "name": "Fact", "settings": [
+    { "type": "select", "id": "icon", "label": "Icon", "options": [ { "value": "whisk", "label": "Whisk" }, { "value": "wheat", "label": "Wheat" }, { "value": "badge", "label": "Badge" }, { "value": "sun", "label": "Sun" }, { "value": "cookie", "label": "Cookie" } ], "default": "whisk" },
+    { "type": "text", "id": "title", "label": "Title" },
+    { "type": "text", "id": "text", "label": "Text" }
+  ] }],
+  "max_blocks": 6,
+  "presets": [{ "name": "About KUKI" }]
+}
+{% endschema %}

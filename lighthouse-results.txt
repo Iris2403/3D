@@ -1,0 +1,10 @@
+/               mobile   perf=99 acce=100 best=100 seo=100 | LCP 2.0 s CLS 0 TBT 0 ms FCP 1.4 s weight Total size was 232 KiB
+/               desktop  perf=100 acce=100 best=100 seo=100 | LCP 0.5 s CLS 0.001 TBT 0 ms FCP 0.3 s weight Total size was 238 KiB
+/pages/menu     mobile   perf=99 acce=100 best=100 seo=100 | LCP 1.9 s CLS 0 TBT 0 ms FCP 1.4 s weight Total size was 312 KiB
+/pages/menu     desktop  perf=100 acce=100 best=100 seo=100 | LCP 0.4 s CLS 0.001 TBT 0 ms FCP 0.3 s weight Total size was 358 KiB
+/pages/gallery  mobile   perf=99 acce=100 best=100 seo=100 | LCP 2.2 s CLS 0 TBT 0 ms FCP 1.2 s weight Total size was 401 KiB
+/pages/gallery  desktop  perf=100 acce=100 best=100 seo=100 | LCP 0.5 s CLS 0.003 TBT 0 ms FCP 0.3 s weight Total size was 400 KiB
+/pages/contact  mobile   perf=100 acce=100 best=100 seo=100 | LCP 1.7 s CLS 0 TBT 0 ms FCP 1.2 s weight Total size was 132 KiB
+/pages/contact  desktop  perf=100 acce=100 best=100 seo=100 | LCP 0.4 s CLS 0.005 TBT 0 ms FCP 0.3 s weight Total size was 132 KiB
+/pages/careers  mobile   perf=99 acce=100 best=100 seo=100 | LCP 1.9 s CLS 0 TBT 0 ms FCP 1.4 s weight Total size was 158 KiB
+/pages/careers  desktop  perf=100 acce=100 best=100 seo=100 | LCP 0.4 s CLS 0.004 TBT 0 ms FCP 0.3 s weight Total size was 158 KiB

@@ -1,0 +1,40 @@
+{%- comment -%}
+  Product card = a <button> that opens the shared product dialog (snippets/kuki-product-dialog).
+  Everything visible on hover is also available on click/tap/keyboard — nothing depends on hover.
+  - item: a section block with settings: name, category, price, description, image, asset
+  - sizes: sizes attribute for the card image
+{%- endcomment -%}
+{%- liquid
+  assign s = item.settings
+  if s.image != blank
+    assign big = s.image | image_url: width: 1400
+    assign big_avif = ''
+  else
+    assign big = s.asset | append: '-lg.webp' | asset_url
+    assign big_avif = s.asset | append: '-lg.avif' | asset_url
+  endif
+  assign cat_key = 'menu.categories.' | append: s.category
+  assign cat_label = cat_key | t
+  assign alt = s.name | append: ' – ' | append: cat_label
+-%}
+<button type="button" class="product-card" data-product data-cursor="{{ 'menu.view' | t }}"
+  data-name="{{ s.name | escape }}"
+  data-category="{{ cat_label | escape }}"
+  {% if s.price != blank %}data-price="{{ settings.currency_symbol }}{{ s.price | escape }}"{% endif %}
+  data-desc="{{ s.description | escape }}"
+  data-img="{{ big }}" data-avif="{{ big_avif }}" data-alt="{{ alt | escape }}"
+  aria-haspopup="dialog" {{ item.shopify_attributes }}>
+  <span class="product-card__media">
+    {%- render 'kuki-picture', image: s.image, name: s.asset, alt: '', sizes: sizes -%}
+  </span>
+  <span class="product-card__body">
+    <span class="product-card__top">
+      <span class="product-card__name">{{ s.name | escape }}</span>
+      {%- if s.price != blank -%}
+        <span class="price"><span class="visually-hidden">{{ 'menu.price' | t }}: </span>{{ settings.currency_symbol }}{{ s.price | escape }}</span>
+      {%- endif -%}
+    </span>
+    {%- if s.description != blank -%}<span class="product-card__desc">{{ s.description | escape }}</span>{%- endif -%}
+    <span class="product-card__more">{{ 'menu.details' | t }} {% render 'kuki-icon', name: 'arrow' %}</span>
+  </span>
+</button>

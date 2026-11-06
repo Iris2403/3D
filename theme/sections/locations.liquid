@@ -1,0 +1,133 @@
+{%- comment -%}
+  Store finder.
+  - Every store is a real KUKI location (address strings exactly as on the previous site).
+  - The schematic map is drawn from *approximate* coordinates (merchant-editable) and is decorative
+    for screen readers; the store list is the accessible control.
+  - Google Maps is NOT loaded until the visitor asks for it (privacy + performance). Directions
+    always use the exact address.
+  - "Nearest store" uses the browser's geolocation once, on request; the position never leaves the device.
+{%- endcomment -%}
+{%- liquid
+  assign min_lng = 23.6
+  assign lng_span = 0.24
+  assign max_lat = 38.07
+  assign lat_span = 0.23
+-%}
+<section class="section locations" id="locations" aria-labelledby="locations-title" data-locations>
+  <div class="container">
+    <div class="section-head section-head--split">
+      <div>
+        <p class="eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+        <h2 class="h1" id="locations-title" data-split style="margin-top: 1rem">{% render 'kuki-split-text', text: section.settings.title %}</h2>
+      </div>
+      <div>
+        <p class="lede" data-reveal>{{ section.settings.text | escape }}</p>
+        <div class="btn-row" style="margin-top: 1.25rem" data-reveal>
+          <button type="button" class="btn btn--sm" data-locate>{% render 'kuki-icon', name: 'locate', class: 'btn__icon' %} {{ 'locations.find_nearest' | t }}</button>
+        </div>
+        <p class="locate-status" role="status" aria-live="polite" data-locate-status></p>
+      </div>
+    </div>
+
+    <div class="locations__grid">
+      <ol class="store-list" role="list" data-store-list>
+        {%- for block in section.blocks -%}
+          {%- assign s = block.settings -%}
+          {%- assign q = s.query | url_encode -%}
+          <li class="store{% if forloop.first %} is-active{% endif %}" data-store data-index="{{ forloop.index0 }}"
+            data-lat="{{ s.lat }}" data-lng="{{ s.lng }}" data-query="{{ s.query | escape }}" data-name="{{ s.name | escape }}" {{ block.shopify_attributes }}>
+            <span class="store__num" aria-hidden="true">{{ forloop.index }}</span>
+            <button type="button" class="store__select" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" data-store-select>
+              <span class="store__name">{{ s.name | escape }}</span>
+              <span class="store__addr">{{ s.street | escape }}, {{ s.locality | escape }}{% if s.area != blank %} · {{ s.area | escape }}{% endif %}</span>
+              <span class="store__dist" data-store-dist></span>
+            </button>
+            <a class="btn btn--sm btn--ghost store__dir" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ q }}" target="_blank" rel="noopener">
+              {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}<span class="visually-hidden">{{ 'locations.directions_to' | t }} {{ s.name | escape }} ({{ 'general.opens_new_window' | t }})</span><span aria-hidden="true">{{ 'locations.directions' | t }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ol>
+
+      <div class="map-panel" data-map-panel>
+        <svg class="map-art" viewBox="0 0 600 640" role="img" aria-labelledby="map-title-{{ section.id }}" preserveAspectRatio="xMidYMid slice">
+          <title id="map-title-{{ section.id }}">{{ 'locations.map_title' | t }}</title>
+          <defs>
+            <pattern id="dots-{{ section.id }}" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.6" fill="#394127" opacity=".22"/></pattern>
+          </defs>
+          <rect width="600" height="640" fill="url(#dots-{{ section.id }})"/>
+          {%- comment -%} Schematic Saronic Gulf (decorative, not to scale) {%- endcomment -%}
+          <path d="M0 470 C 60 455, 95 470, 115 445 C 160 470, 190 505, 245 525 C 300 545, 345 600, 410 640 L 0 640 Z" fill="#a9c1c9" opacity=".55"/>
+          <text x="40" y="590" font-family="Georgia, serif" font-style="italic" font-size="22" fill="#2f4c57" opacity=".7">{{ 'locations.sea' | t }}</text>
+          {%- comment -%} Athens centre marker {%- endcomment -%}
+          {%- assign cx = 23.7275 | minus: min_lng | divided_by: lng_span | times: 560 | plus: 20 -%}
+          {%- assign cy = max_lat | minus: 37.9755 | divided_by: lat_span | times: 600 | plus: 20 -%}
+          <g opacity=".7"><rect x="{{ cx | minus: 7 }}" y="{{ cy | minus: 7 }}" width="14" height="14" rx="3" fill="none" stroke="#3a2216" stroke-width="2.5"/>
+          <text x="{{ cx | plus: 14 }}" y="{{ cy | plus: 5 }}" font-family="system-ui, sans-serif" font-weight="700" font-size="14" fill="#3a2216">{{ 'locations.centre' | t }}</text></g>
+          {%- for block in section.blocks -%}
+            {%- assign s = block.settings -%}
+            {%- assign x = s.lng | minus: min_lng | divided_by: lng_span | times: 560 | plus: 20 | round: 1 -%}
+            {%- assign y = max_lat | minus: s.lat | divided_by: lat_span | times: 600 | plus: 20 | round: 1 -%}
+            <g class="map-pin{% if forloop.first %} is-active{% endif %}" data-pin="{{ forloop.index0 }}" transform="translate({{ x }} {{ y }})" aria-hidden="true">
+              <circle class="pin-ring" r="24" fill="#fbf6ec" opacity=".9" stroke="transparent"/>
+              <circle class="pin-dot" r="17"/>
+              <text text-anchor="middle" dy="5">{{ forloop.index }}</text>
+              <text class="pin-label" x="30" dy="5">{{ s.name | escape }}</text>
+            </g>
+          {%- endfor -%}
+        </svg>
+        <div class="map-embed" data-map-embed hidden></div>
+        <div class="map-panel__ui">
+          <span class="map-panel__note">{{ 'locations.schematic' | t }}</span>
+          <button type="button" class="btn btn--sm btn--light" data-map-load>{% render 'kuki-icon', name: 'map', class: 'btn__icon' %} {{ 'locations.load_map' | t }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} LocalBusiness (Bakery) per store — address only; no hours or ratings are invented. {%- endcomment -%}
+<script type="application/ld+json">
+[
+  {%- for block in section.blocks -%}
+  {
+    "@context": "https://schema.org",
+    "@type": "Bakery",
+    "name": {{ shop.name | append: ' ' | append: block.settings.name | json }},
+    "url": {{ shop.url | json }},
+    "image": {{ 'og-image.jpg' | asset_url | prepend: 'https:' | json }},
+    "servesCuisine": "Cookies",
+    "parentOrganization": { "@id": {{ shop.url | append: '/#organization' | json }} },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": {{ block.settings.street | json }},
+      "addressLocality": {{ block.settings.locality | json }},
+      "addressRegion": "Attica",
+      "addressCountry": "GR"
+    },
+    "hasMap": {{ 'https://www.google.com/maps/search/?api=1&query=' | append: block.settings.query | json }}
+  }{% unless forloop.last %},{% endunless %}
+  {%- endfor -%}
+]
+</script>
+
+{% schema %}
+{
+  "name": "Locations",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Authentic Greek cookies" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Where to find *Kuki?*" },
+    { "type": "textarea", "id": "text", "label": "Text" }
+  ],
+  "blocks": [{ "type": "store", "name": "Store", "settings": [
+    { "type": "text", "id": "name", "label": "Name" },
+    { "type": "text", "id": "area", "label": "Area label (e.g. Athens · West)" },
+    { "type": "text", "id": "street", "label": "Street address" },
+    { "type": "text", "id": "locality", "label": "Neighbourhood / city" },
+    { "type": "text", "id": "query", "label": "Google Maps query (full address)" },
+    { "type": "text", "id": "lat", "label": "Latitude (approximate, used for the schematic map and nearest-store sort)" },
+    { "type": "text", "id": "lng", "label": "Longitude (approximate)" }
+  ] }],
+  "presets": [{ "name": "Locations" }]
+}
+{% endschema %}

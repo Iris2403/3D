@@ -1,0 +1,29 @@
+<section class="section section--tight" aria-labelledby="cta-title-{{ section.id }}">
+  <div class="container">
+    <div class="cta-band on-dark" data-reveal="scale">
+      <div>
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        <h2 class="h2" id="cta-title-{{ section.id }}" style="margin-top: 1rem">{{ section.settings.title | escape | replace: '*', '' }}</h2>
+        {%- if section.settings.text != blank -%}<p class="lede" style="margin-top: 1rem">{{ section.settings.text | escape }}</p>{%- endif -%}
+        <div class="btn-row" style="margin-top: 1.75rem">
+          <a class="btn btn--light" href="{{ section.settings.url | default: '/pages/contact' }}" data-magnetic>{{ section.settings.button | escape }} {% render 'kuki-icon', name: 'arrow', class: 'btn__icon' %}</a>
+        </div>
+      </div>
+      {%- render 'kuki-picture', name: section.settings.asset | default: 'i-mascot-ball', alt: '', sizes: '240px' -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Call to action band",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Franchise" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Interested in opening the next Kuki?" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Let us know!" },
+    { "type": "text", "id": "button", "label": "Button", "default": "Contact us" },
+    { "type": "url", "id": "url", "label": "Button link" },
+    { "type": "text", "id": "asset", "label": "Illustration (developer)", "default": "i-mascot-ball" }
+  ],
+  "presets": [{ "name": "Call to action band" }]
+}
+{% endschema %}

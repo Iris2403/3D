@@ -1,0 +1,37 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "KUKI Flagship",
+    "theme_version": "1.0.0",
+    "theme_author": "KUKI",
+    "theme_documentation_url": "https://kukiworld.com",
+    "theme_support_url": "https://kukiworld.com/pages/contact"
+  },
+  {
+    "name": "Ordering",
+    "settings": [
+      { "type": "paragraph", "content": "Every ORDER button on the site points here. Today KUKI takes orders via Instagram. When a delivery partner or online shop is ready, paste its link here — no code changes needed." },
+      { "type": "url", "id": "order_url", "label": "Order link", "default": "https://www.instagram.com/kuki.ath/" },
+      { "type": "text", "id": "order_label", "label": "Order button label", "default": "Order your cookies" },
+      { "type": "textarea", "id": "order_note", "label": "Note under order buttons in product details", "default": "Orders are placed through our Instagram @kuki.ath — or just visit your nearest Kuki store." },
+      { "type": "text", "id": "currency_symbol", "label": "Currency symbol", "default": "€" },
+      { "type": "text", "id": "currency_code", "label": "Currency code (ISO 4217)", "default": "EUR" },
+      { "type": "url", "id": "menu_url", "label": "Menu page" }
+    ]
+  },
+  {
+    "name": "Social",
+    "settings": [
+      { "type": "url", "id": "instagram_url", "label": "Instagram", "default": "https://www.instagram.com/kuki.ath/" }
+    ]
+  },
+  {
+    "name": "SEO & sharing",
+    "settings": [
+      { "type": "text", "id": "seo_home_title", "label": "Home page title", "default": "KUKI | Handmade Cookies Baked Fresh Daily in Athens" },
+      { "type": "textarea", "id": "seo_description", "label": "Default meta description", "default": "Soft, buttery, ridiculously good cookies, baked fresh every day in Athens. Handmade pralines and caramel, French butter and premium chocolate — find a KUKI store near you." },
+      { "type": "textarea", "id": "seo_menu_description", "label": "Menu page meta description", "default": "The KUKI menu: Classic, Double Chocolate, Hazelnut, Tiramisu and Pistachio cookies, Brookies, Kuki's & Cream cups, Kuki Rolls and coffee — baked fresh daily in Athens." },
+      { "type": "image_picker", "id": "share_image", "label": "Social sharing image (1200×630)" }
+    ]
+  }
+]

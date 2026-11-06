@@ -1,0 +1,106 @@
+{%- comment -%}
+  Full menu. Grouped by category with real headings (crawlable, works without JS); kuki.js turns the
+  category bar into a filter. Prices/names exactly as on the previous site. Descriptions are only shown
+  where they were verifiably specific to the product (several items shared copy-pasted placeholder text).
+{%- endcomment -%}
+{%- assign cats = 'cookies,cream,rolls,coffee,hot_chocolate' | split: ',' -%}
+<section class="section" style="padding-top: 0" aria-label="{{ 'menu.title' | t }}" data-menu>
+  <div class="container">
+    <div class="menu-tabs" role="group" aria-label="{{ 'menu.filter' | t }}" data-menu-tabs hidden>
+      <button type="button" class="menu-tab" aria-pressed="true" data-filter="all">{{ 'menu.categories.all' | t }}</button>
+      {%- for cat in cats -%}
+        {%- assign has = 0 -%}
+        {%- for b in section.blocks -%}{%- if b.settings.category == cat -%}{%- assign has = has | plus: 1 -%}{%- endif -%}{%- endfor -%}
+        {%- if has > 0 -%}
+          {%- assign k = 'menu.categories.' | append: cat -%}
+          <button type="button" class="menu-tab" aria-pressed="false" data-filter="{{ cat }}">{{ k | t }}</button>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    <p class="visually-hidden" role="status" aria-live="polite" data-menu-status></p>
+
+    {%- for cat in cats -%}
+      {%- liquid
+        assign count = 0
+        for b in section.blocks
+          if b.settings.category == cat
+            assign count = count | plus: 1
+          endif
+        endfor
+        assign k = 'menu.categories.' | append: cat
+      -%}
+      {%- if count > 0 -%}
+        <div class="menu-group" data-group="{{ cat }}" id="menu-{{ cat | replace: '_', '-' }}">
+          <div class="menu-group__head">
+            <h2 class="h2">{{ k | t }}</h2>
+            <span class="menu-group__count">{{ count }} {{ 'menu.items' | t }}</span>
+          </div>
+          <ul class="product-grid" role="list">
+            {%- for block in section.blocks -%}
+              {%- if block.settings.category == cat -%}
+              <li data-reveal style="--d: {{ forloop.index0 | modulo: 4 }}">{%- render 'kuki-product-card', item: block, sizes: '(min-width: 1200px) 320px, (min-width: 600px) 45vw, 92vw' -%}</li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if section.settings.note != blank -%}
+      <p class="menu-note" lang="{{ section.settings.note_lang | default: 'el' }}">{{ section.settings.note | escape }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Menu",
+  "name": {{ shop.name | append: ' Menu' | json }},
+  "inLanguage": "en",
+  "hasMenuSection": [
+    {%- assign first = true -%}
+    {%- for cat in cats -%}
+      {%- assign k = 'menu.categories.' | append: cat -%}
+      {%- assign started = false -%}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.category == cat -%}
+          {%- if started == false -%}
+            {%- unless first %},{% endunless -%}{%- assign first = false -%}
+            { "@type": "MenuSection", "name": {{ k | t | json }}, "hasMenuItem": [
+            {%- assign started = true -%}
+          {%- else -%},{%- endif -%}
+          { "@type": "MenuItem", "name": {{ block.settings.name | json }}
+            {%- if block.settings.description != blank %}, "description": {{ block.settings.description | json }}{% endif -%}
+            {%- if block.settings.price != blank %}, "offers": { "@type": "Offer", "price": {{ block.settings.price | json }}, "priceCurrency": {{ settings.currency_code | default: 'EUR' | json }} }{% endif %} }
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if started -%}] }{%- endif -%}
+    {%- endfor -%}
+  ]
+}
+</script>
+{% schema %}
+{
+  "name": "Menu",
+  "settings": [
+    { "type": "textarea", "id": "note", "label": "Note under the menu" },
+    { "type": "text", "id": "note_lang", "label": "Note language code", "default": "el" }
+  ],
+  "blocks": [
+    {
+      "type": "product", "name": "Menu item",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name" },
+        { "type": "select", "id": "category", "label": "Category", "options": [ { "value": "cookies", "label": "Cookies" }, { "value": "cream", "label": "Kuki's & Cream" }, { "value": "coffee", "label": "Coffee" }, { "value": "hot_chocolate", "label": "Hot Chocolate" }, { "value": "rolls", "label": "Kuki Rolls" } ], "default": "cookies" },
+        { "type": "text", "id": "price", "label": "Price (number only, e.g. 3.60) – leave empty to hide" },
+        { "type": "textarea", "id": "description", "label": "Description (only verified ingredients)" },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "asset", "label": "Fallback theme image (developer)" }
+      ]
+    }
+  ],
+  "max_blocks": 50,
+  "presets": [{ "name": "Menu" }]
+}
+{% endschema %}

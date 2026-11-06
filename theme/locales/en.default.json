@@ -1,0 +1,130 @@
+{
+  "general": {
+    "home": "Home",
+    "main_nav": "Main",
+    "order": "Order",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "close": "Close",
+    "opens_new_window": "opens in a new tab",
+    "search": "Search",
+    "results": "results"
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content"
+  },
+  "hero": {
+    "scroll": "Scroll"
+  },
+  "menu": {
+    "title": "Menu",
+    "filter": "Filter the menu",
+    "full_menu": "Full menu",
+    "details": "Details",
+    "view": "View",
+    "price": "Price",
+    "items": "items",
+    "previous": "Previous items",
+    "next": "Next items",
+    "carousel_hint": "Menu items — scroll horizontally",
+    "showing": "Showing",
+    "categories": {
+      "all": "All",
+      "cookies": "Cookies",
+      "cream": "Kuki's & Cream",
+      "coffee": "Coffee",
+      "hot_chocolate": "Hot Chocolate",
+      "rolls": "Kuki Rolls"
+    },
+    "carousel_label": "Cookie highlights"
+  },
+  "process": {
+    "step": "Step"
+  },
+  "locations": {
+    "find_nearest": "Find my nearest Kuki",
+    "directions": "Directions",
+    "directions_to": "Directions to Kuki",
+    "map_title": "Schematic map of KUKI stores across Athens",
+    "sea": "Saronic Gulf",
+    "centre": "Syntagma",
+    "schematic": "Schematic map · positions approximate",
+    "load_map": "Show Google Map"
+  },
+  "gallery": {
+    "title": "Gallery",
+    "viewer": "Image viewer",
+    "previous": "Previous image",
+    "next": "Next image",
+    "open": "Open full-screen image",
+    "view": "View",
+    "instagram": "Follow @kuki.ath"
+  },
+  "faq": {
+    "message_us": "Message us on Instagram",
+    "contact_form": "Contact form"
+  },
+  "careers": {
+    "hiring": "Hiring now",
+    "apply": "Apply here"
+  },
+  "forms": {
+    "name": "Full name",
+    "email": "Email address",
+    "phone": "Phone",
+    "city": "City",
+    "budget": "Budget",
+    "more_info": "More information",
+    "submit": "Send message",
+    "subscribe": "Subscribe",
+    "preferred_store": "Preferred store",
+    "role": "Role or area of interest",
+    "about_you": "A little about you",
+    "about_you_placeholder": "Tell us what makes you you…",
+    "choose": "Choose…",
+    "send_application": "Send application",
+    "careers_consent": "I'm happy for Kuki to keep my details for future opportunities. See our",
+    "newsletter_privacy": "We only ask for your email, use it solely for KUKI news and you can unsubscribe at any time. See our",
+    "contact_privacy": "We use these details only to reply to your enquiry. See our",
+    "error_intro": "Please check the following:"
+  },
+  "footer": {
+    "explore": "Explore",
+    "company": "Company",
+    "follow": "Follow",
+    "menu": "Menu",
+    "about": "About",
+    "gallery": "Gallery",
+    "locations": "Locations",
+    "franchise": "Franchise & business",
+    "careers": "Careers",
+    "faq": "FAQ",
+    "privacy": "Privacy policy",
+    "made_in": "Baked fresh daily in Athens"
+  },
+  "not_found": {
+    "title": "This page was eaten in seconds.",
+    "text": "We couldn't find what you were looking for — but the cookies are still right here.",
+    "home": "Back home"
+  },
+  "generic": {
+    "text": "Our cookies are baked fresh daily in our Athens stores. Explore the menu or order through Instagram."
+  },
+  "js": {
+    "required": "Please fill in this field.",
+    "email": "Please enter a valid email address, like name@example.com.",
+    "too_short": "Please write a little more (at least %min% characters).",
+    "phone": "Please enter a valid phone number.",
+    "consent": "Please tick the box to continue.",
+    "select": "Please choose an option.",
+    "fix_errors": "Please fix the highlighted fields.",
+    "locating": "Finding your location…",
+    "nearest": "Your nearest Kuki is %name% (about %km% km away).",
+    "geo_denied": "Location access was blocked. Pick a store from the list instead.",
+    "geo_unavailable": "We couldn't get your location. Pick a store from the list instead.",
+    "km_away": "≈ %km% km away",
+    "showing": "Showing %label%: %count% items",
+    "image_of": "Image %i% of %n%",
+    "map_frame": "Google Map showing Kuki %name%"
+  }
+}

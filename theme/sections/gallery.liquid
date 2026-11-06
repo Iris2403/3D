@@ -1,0 +1,65 @@
+{%- comment -%} Masonry gallery. Each tile is a button that opens the full-screen lightbox (keyboard, swipe, Esc). {%- endcomment -%}
+<section class="section{% if section.settings.background == 'cream' %} on-cream{% endif %}" id="{{ section.settings.anchor | default: 'gallery' }}" aria-labelledby="gallery-title-{{ section.id }}">
+  <div class="container">
+    {%- if section.settings.title != blank -%}
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+          <h2 class="h1" id="gallery-title-{{ section.id }}" data-split style="margin-top: 1rem">{% render 'kuki-split-text', text: section.settings.title %}</h2>
+        </div>
+        <div>
+          {%- if section.settings.text != blank -%}<p class="lede" data-reveal>{{ section.settings.text | escape }}</p>{%- endif -%}
+          <div class="btn-row" style="margin-top: 1rem" data-reveal>
+            {%- if section.settings.link_url != blank -%}<a class="link-arrow" href="{{ section.settings.link_url }}">{{ section.settings.link_label | escape }} {% render 'kuki-icon', name: 'arrow' %}</a>{%- endif -%}
+            {%- if settings.instagram_url != blank -%}<a class="link-arrow" href="{{ settings.instagram_url }}" target="_blank" rel="noopener">{% render 'kuki-icon', name: 'instagram' %} {{ 'gallery.instagram' | t }}<span class="visually-hidden"> ({{ 'general.opens_new_window' | t }})</span></a>{%- endif -%}
+          </div>
+        </div>
+      </div>
+    {%- else -%}
+      <h2 class="visually-hidden" id="gallery-title-{{ section.id }}">{{ 'gallery.title' | t }}</h2>
+    {%- endif -%}
+
+    <ul class="masonry{% if section.settings.full %} masonry--full{% endif %}" role="list" data-gallery>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign s = block.settings
+          if s.image != blank
+            assign big = s.image | image_url: width: 1800
+            assign big_avif = ''
+          else
+            assign big = s.asset | append: '-lg.webp' | asset_url
+            assign big_avif = s.asset | append: '-lg.avif' | asset_url
+          endif
+        -%}
+        <li data-reveal style="--d: {{ forloop.index0 | modulo: 3 }}" {{ block.shopify_attributes }}>
+          <button type="button" class="tile" data-gallery-item data-img="{{ big }}" data-avif="{{ big_avif }}" data-alt="{{ s.alt | escape }}" data-cursor="{{ 'gallery.view' | t }}" aria-haspopup="dialog">
+            {%- render 'kuki-picture', image: s.image, name: s.asset, alt: s.alt, sizes: '(min-width: 1280px) 25vw, (min-width: 900px) 33vw, 50vw' -%}
+            <span class="tile__zoom" aria-hidden="true">{% render 'kuki-icon', name: 'zoom' %}</span>
+            <span class="visually-hidden">{{ 'gallery.open' | t }}</span>
+          </button>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Gallery",
+  "settings": [
+    { "type": "text", "id": "anchor", "label": "Anchor id", "default": "gallery" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Join the community" },
+    { "type": "text", "id": "title", "label": "Title" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Full gallery" },
+    { "type": "url", "id": "link_url", "label": "Link" },
+    { "type": "checkbox", "id": "full", "label": "Full-page layout (4 columns on large screens)", "default": false },
+    { "type": "select", "id": "background", "label": "Background", "options": [ { "value": "vanilla", "label": "Vanilla" }, { "value": "cream", "label": "Cream" } ], "default": "vanilla" }
+  ],
+  "blocks": [{ "type": "image", "name": "Image", "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "alt", "label": "Alt text (describe the photo)" },
+    { "type": "text", "id": "asset", "label": "Fallback theme image (developer)" }
+  ] }],
+  "presets": [{ "name": "Gallery" }]
+}
+{% endschema %}

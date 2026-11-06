@@ -1,0 +1,54 @@
+{%- comment -%}
+  The KUKI Process — three stages. On large screens with motion allowed, kuki.js turns this into a
+  sticky horizontal track driven by *native* scroll (no scroll hijacking: wheel, keyboard, scrollbar
+  and screen readers behave normally). Everywhere else it is a simple grid / vertical stack.
+{%- endcomment -%}
+<section class="section process" id="process" aria-labelledby="process-title" data-process>
+  <div class="container section-head section-head--split">
+    <div>
+      <p class="eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+      <h2 class="h1" id="process-title" data-split style="margin-top: 1rem">{% render 'kuki-split-text', text: section.settings.title %}</h2>
+    </div>
+    <p class="lede" data-reveal>{{ section.settings.text | escape }}</p>
+  </div>
+  <div class="process__pin" data-process-pin>
+    <div class="process__sticky">
+      <ol class="process__steps" role="list" data-process-track>
+        {%- for block in section.blocks -%}
+          <li class="step" data-reveal style="--d: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            <span class="step__num" aria-hidden="true">{{ forloop.index }}</span>
+            <div>
+              <p class="step__kicker">{{ 'process.step' | t }} {{ forloop.index }} · {{ block.settings.kicker | escape }}</p>
+              <h3>{{ block.settings.title | escape }}</h3>
+            </div>
+            <p>{{ block.settings.text | escape }}</p>
+            <div class="step__art">
+              {%- render 'kuki-picture', image: block.settings.image, name: block.settings.asset, alt: block.settings.image_alt, class: 'mascot', sizes: '260px' -%}
+            </div>
+          </li>
+        {%- endfor -%}
+      </ol>
+      <div class="process__bar" aria-hidden="true"><span data-process-progress></span></div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Process",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our quality promise" },
+    { "type": "text", "id": "title", "label": "Title", "default": "The Kuki *Process*" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Consistent in every bite." }
+  ],
+  "blocks": [{ "type": "step", "name": "Step", "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker" },
+    { "type": "text", "id": "title", "label": "Title" },
+    { "type": "textarea", "id": "text", "label": "Text" },
+    { "type": "image_picker", "id": "image", "label": "Illustration" },
+    { "type": "text", "id": "image_alt", "label": "Illustration alt" },
+    { "type": "text", "id": "asset", "label": "Fallback theme image (developer)" }
+  ] }],
+  "max_blocks": 5,
+  "presets": [{ "name": "Process" }]
+}
+{% endschema %}

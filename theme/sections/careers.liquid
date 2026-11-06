@@ -1,0 +1,118 @@
+{%- comment -%}
+  Careers — store cards + application (Shopify native contact form, same field names as before so the
+  team's inbox rules keep working). No CV upload: Shopify contact forms cannot accept files securely.
+{%- endcomment -%}
+{%- assign roles = section.settings.roles | split: ',' -%}
+<section class="section" style="padding-top: 0" aria-labelledby="stores-title">
+  <div class="container">
+    <div class="section-head section-head--split">
+      <div>
+        <p class="eyebrow" data-reveal>{{ section.settings.stores_eyebrow | escape }}</p>
+        <h2 class="h1" id="stores-title" data-split style="margin-top: 1rem">{% render 'kuki-split-text', text: section.settings.stores_title %}</h2>
+      </div>
+      <p class="lede" data-reveal>{{ section.settings.stores_text | escape }}</p>
+    </div>
+    <ul class="roles" role="list">
+      {%- for block in section.blocks -%}
+        {%- assign s = block.settings -%}
+        <li class="role" data-reveal style="--d: {{ forloop.index0 | modulo: 3 }}" {{ block.shopify_attributes }}>
+          <div class="role__top">
+            <h3 class="h3">{{ s.store | escape }}</h3>
+            {%- if s.hiring -%}<span class="role__badge">{{ 'careers.hiring' | t }}</span>{%- endif -%}
+          </div>
+          {%- if s.area != blank -%}<p class="role__area">{{ s.area | escape }}</p>{%- endif -%}
+          <p class="role__jobs" lang="el">{{ s.jobs | escape }}</p>
+          <p>{{ s.text | escape }}</p>
+          <a class="link-arrow" href="#apply" data-apply-store="{{ s.store | escape }}">{{ 'careers.apply' | t }} {% render 'kuki-icon', name: 'arrow' %}<span class="visually-hidden"> – {{ s.store | escape }}</span></a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+<section class="section on-cream" id="apply" aria-labelledby="apply-title">
+  <div class="container split">
+    <div class="split__sticky">
+      <p class="eyebrow">{{ section.settings.form_eyebrow | escape }}</p>
+      <h2 class="h2" id="apply-title" style="margin-top: 1rem">{{ section.settings.form_title | escape }}</h2>
+      <p class="lede" style="margin-top: 1rem">{{ section.settings.form_text | escape }}</p>
+      {%- render 'kuki-picture', name: 'i-mascot-ball', alt: '', class: 'mascot', sizes: '200px' -%}
+    </div>
+    <div class="form-card">
+      {%- form 'contact', id: 'kuki-careers-form', class: 'form', novalidate: 'novalidate', data-validate: '' -%}
+        {%- render 'kuki-form-status', form: form, success: section.settings.success -%}
+        <input type="hidden" name="contact[Source]" value="Careers application">
+        <div class="hp" aria-hidden="true"><label for="ca-website">Website</label><input id="ca-website" type="text" name="website" tabindex="-1" autocomplete="off" data-honeypot></div>
+        <div class="form__row form__row--2">
+          <div class="field">
+            <label for="ca-name">{{ 'forms.name' | t }} <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="ca-name" type="text" name="contact[name]" required maxlength="120" autocomplete="name" aria-describedby="ca-name-err">
+            <p class="field__error" id="ca-name-err" data-error hidden></p>
+          </div>
+          <div class="field">
+            <label for="ca-email">{{ 'forms.email' | t }} <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="ca-email" type="email" name="contact[email]" required maxlength="254" autocomplete="email" inputmode="email" spellcheck="false" aria-describedby="ca-email-err">
+            <p class="field__error" id="ca-email-err" data-error hidden></p>
+          </div>
+        </div>
+        <div class="form__row form__row--2">
+          <div class="field">
+            <label for="ca-phone">{{ 'forms.phone' | t }}</label>
+            <input class="input" id="ca-phone" type="tel" name="contact[phone]" maxlength="30" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\-]{6,30}" aria-describedby="ca-phone-err">
+            <p class="field__error" id="ca-phone-err" data-error hidden></p>
+          </div>
+          <div class="field">
+            <label for="ca-store">{{ 'forms.preferred_store' | t }} <span class="req" aria-hidden="true">*</span></label>
+            <select class="input" id="ca-store" name="contact[Preferred Store]" required aria-describedby="ca-store-err" data-store-select-field>
+              <option value="">{{ 'forms.choose' | t }}</option>
+              {%- for block in section.blocks -%}<option value="{{ block.settings.store | escape }}">{{ block.settings.store | escape }}</option>{%- endfor -%}
+            </select>
+            <p class="field__error" id="ca-store-err" data-error hidden></p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="ca-role">{{ 'forms.role' | t }}</label>
+          <select class="input" id="ca-role" name="contact[Role]" lang="el">
+            <option value="">{{ 'forms.choose' | t }}</option>
+            {%- for r in roles -%}<option value="{{ r | strip | escape }}">{{ r | strip | escape }}</option>{%- endfor -%}
+          </select>
+        </div>
+        <div class="field">
+          <label for="ca-body">{{ 'forms.about_you' | t }}</label>
+          <textarea class="input" id="ca-body" name="contact[body]" maxlength="3000" placeholder="{{ 'forms.about_you_placeholder' | t }}"></textarea>
+        </div>
+        <div class="field">
+          <label class="check" for="ca-consent">
+            <input id="ca-consent" type="checkbox" name="contact[Consent]" value="Yes" required aria-describedby="ca-consent-err">
+            <span>{{ 'forms.careers_consent' | t }} <a href="/policies/privacy-policy">{{ 'footer.privacy' | t }}</a>.</span>
+          </label>
+          <p class="field__error" id="ca-consent-err" data-error hidden></p>
+        </div>
+        <div><button class="btn btn--caramel" type="submit">{{ 'forms.send_application' | t }} {% render 'kuki-icon', name: 'arrow', class: 'btn__icon' %}</button></div>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Careers",
+  "settings": [
+    { "type": "text", "id": "stores_eyebrow", "label": "Stores eyebrow", "default": "The next chapter" },
+    { "type": "text", "id": "stores_title", "label": "Stores title", "default": "Find your *store.*" },
+    { "type": "textarea", "id": "stores_text", "label": "Stores text" },
+    { "type": "text", "id": "roles", "label": "Roles (comma separated)", "default": "Βοηθός ζαχαροπλάστη, Ταμίας, Barista" },
+    { "type": "text", "id": "form_eyebrow", "label": "Form eyebrow", "default": "Your next chapter" },
+    { "type": "text", "id": "form_title", "label": "Form title", "default": "Tell us where you'd love to work." },
+    { "type": "textarea", "id": "form_text", "label": "Form text" },
+    { "type": "text", "id": "success", "label": "Success message", "default": "Thank you! Your application has been sent — we'll be in touch when there's a match." }
+  ],
+  "blocks": [{ "type": "store", "name": "Store", "settings": [
+    { "type": "text", "id": "store", "label": "Store" },
+    { "type": "text", "id": "area", "label": "Area" },
+    { "type": "checkbox", "id": "hiring", "label": "Hiring now", "default": true },
+    { "type": "text", "id": "jobs", "label": "Open roles" },
+    { "type": "textarea", "id": "text", "label": "Text" }
+  ] }],
+  "presets": [{ "name": "Careers" }]
+}
+{% endschema %}

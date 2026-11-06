@@ -1,0 +1,23 @@
+{%- comment -%} One shared, accessible product dialog. Filled by assets/kuki.js from the clicked card's data-*. All text is set via textContent (no HTML injection). {%- endcomment -%}
+<dialog class="sheet" id="product-dialog" aria-labelledby="pd-name">
+  <button type="button" class="icon-btn sheet__close" data-dialog-close aria-label="{{ 'general.close' | t }}">{% render 'kuki-icon', name: 'close' %}</button>
+  <div class="product-detail">
+    <div class="product-detail__media">
+      <picture><source type="image/avif" data-pd-avif><img data-pd-img alt="" width="1200" height="900" decoding="async"></picture>
+    </div>
+    <div class="product-detail__body">
+      <p class="eyebrow" data-pd-cat></p>
+      <h2 class="product-detail__name" id="pd-name" data-pd-name></h2>
+      <p class="product-detail__price" data-pd-price></p>
+      <p class="product-detail__desc" data-pd-desc></p>
+      <div class="btn-row">
+        <a class="btn btn--caramel" href="{{ settings.order_url }}" target="_blank" rel="noopener" data-magnetic>
+          {{ settings.order_label | default: 'Order your cookies' | escape }} {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}
+          <span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span>
+        </a>
+        <a class="btn btn--ghost" href="{{ settings.menu_url | default: '/pages/menu' }}">{{ 'menu.full_menu' | t }}</a>
+      </div>
+      {%- if settings.order_note != blank -%}<p class="product-detail__note">{{ settings.order_note | escape }}</p>{%- endif -%}
+    </div>
+  </div>
+</dialog>

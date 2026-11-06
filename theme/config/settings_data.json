@@ -1,0 +1,162 @@
+{
+  "current": {
+    "order_url": "https://www.instagram.com/kuki.ath/",
+    "order_label": "Order your cookies",
+    "instagram_url": "https://www.instagram.com/kuki.ath/",
+    "currency_symbol": "€",
+    "currency_code": "EUR",
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {
+          "order_label": "Order now"
+        },
+        "blocks": {
+          "link_1": {
+            "type": "link",
+            "settings": {
+              "label": "Home",
+              "url": "/"
+            }
+          },
+          "link_2": {
+            "type": "link",
+            "settings": {
+              "label": "Menu",
+              "url": "/pages/menu"
+            }
+          },
+          "link_3": {
+            "type": "link",
+            "settings": {
+              "label": "About",
+              "url": "/#about"
+            }
+          },
+          "link_4": {
+            "type": "link",
+            "settings": {
+              "label": "Gallery",
+              "url": "/pages/gallery"
+            }
+          },
+          "link_5": {
+            "type": "link",
+            "settings": {
+              "label": "Locations",
+              "url": "/#locations"
+            }
+          },
+          "link_6": {
+            "type": "link",
+            "settings": {
+              "label": "Contact",
+              "url": "/pages/contact"
+            }
+          },
+          "link_7": {
+            "type": "link",
+            "settings": {
+              "label": "Careers",
+              "url": "/pages/careers"
+            }
+          }
+        },
+        "block_order": [
+          "link_1",
+          "link_2",
+          "link_3",
+          "link_4",
+          "link_5",
+          "link_6",
+          "link_7"
+        ]
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {}
+      }
+    }
+  },
+  "presets": {
+    "Default": {
+      "order_url": "https://www.instagram.com/kuki.ath/",
+      "order_label": "Order your cookies",
+      "instagram_url": "https://www.instagram.com/kuki.ath/",
+      "currency_symbol": "€",
+      "currency_code": "EUR",
+      "sections": {
+        "header": {
+          "type": "header",
+          "settings": {
+            "order_label": "Order now"
+          },
+          "blocks": {
+            "link_1": {
+              "type": "link",
+              "settings": {
+                "label": "Home",
+                "url": "/"
+              }
+            },
+            "link_2": {
+              "type": "link",
+              "settings": {
+                "label": "Menu",
+                "url": "/pages/menu"
+              }
+            },
+            "link_3": {
+              "type": "link",
+              "settings": {
+                "label": "About",
+                "url": "/#about"
+              }
+            },
+            "link_4": {
+              "type": "link",
+              "settings": {
+                "label": "Gallery",
+                "url": "/pages/gallery"
+              }
+            },
+            "link_5": {
+              "type": "link",
+              "settings": {
+                "label": "Locations",
+                "url": "/#locations"
+              }
+            },
+            "link_6": {
+              "type": "link",
+              "settings": {
+                "label": "Contact",
+                "url": "/pages/contact"
+              }
+            },
+            "link_7": {
+              "type": "link",
+              "settings": {
+                "label": "Careers",
+                "url": "/pages/careers"
+              }
+            }
+          },
+          "block_order": [
+            "link_1",
+            "link_2",
+            "link_3",
+            "link_4",
+            "link_5",
+            "link_6",
+            "link_7"
+          ]
+        },
+        "footer": {
+          "type": "footer",
+          "settings": {}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code | default: 'en' }}" class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#fbf6ec">
+    {%- comment -%}
+      Security: Shopify already serves HSTS, X-Frame-Options: DENY, nosniff and a CSP with
+      frame-ancestors 'none'. A script-src allowlist cannot be set from a theme without breaking
+      Shopify's own injected scripts (content_for_header), so we add only the directives that are
+      safe alongside them.
+    {%- endcomment -%}
+    <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    {%- render 'kuki-meta-tags' -%}
+
+    <link rel="icon" type="image/png" href="{{ 'favicon-64.png' | asset_url }}">
+    <link rel="apple-touch-icon" href="{{ 'apple-touch-icon.png' | asset_url }}">
+
+    {%- comment -%} Fonts: self-hosted, subset, preloaded (only the two the first paint needs). {%- endcomment -%}
+    {{ 'fraunces-soft-normal.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+    {{ 'manrope-latin.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+    <style>
+      @font-face { font-family: 'Fraunces Soft'; src: url({{ 'fraunces-soft-normal.woff2' | asset_url }}) format('woff2'); font-weight: 400 800; font-style: normal; font-display: swap; }
+      @font-face { font-family: 'Fraunces Soft'; src: url({{ 'fraunces-soft-italic.woff2' | asset_url }}) format('woff2'); font-weight: 400 800; font-style: italic; font-display: swap; }
+      @font-face { font-family: 'Manrope'; src: url({{ 'manrope-latin.woff2' | asset_url }}) format('woff2'); font-weight: 200 800; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'Manrope'; src: url({{ 'manrope-greek.woff2' | asset_url }}) format('woff2'); font-weight: 200 800; font-display: swap; unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF; }
+    </style>
+    {{ 'kuki.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {%- if template.name == 'index' -%}
+      {%- comment -%} The hero's static cookie is the LCP candidate on mobile: fetch it first. {%- endcomment -%}
+      {%- capture hero_srcset -%}{{ 'c-cookie-1-sm.avif' | asset_url }} 480w, {{ 'c-cookie-1-lg.avif' | asset_url }} 600w{%- endcapture -%}
+      {{ 'c-cookie-1-lg.avif' | asset_url | preload_tag: as: 'image', type: 'image/avif', fetchpriority: 'high', imagesrcset: hero_srcset, imagesizes: '(min-width: 900px) 600px, 84vw' }}
+    {%- endif -%}
+
+    <script>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script type="module" src="{{ 'kuki.js' | asset_url }}"></script>
+
+    {%- render 'kuki-structured-data' -%}
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="template-{{ template.name | handle }}{% if template.suffix %} template-{{ template.suffix | handle }}{% endif %}">
+    <a class="skip-link" href="#main">{{ 'accessibility.skip_to_content' | t }}</a>
+
+    {% section 'header' %}
+
+    <main id="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% section 'footer' %}
+
+    {%- render 'kuki-product-dialog' -%}
+    {%- render 'kuki-lightbox' -%}
+    <div class="cursor" aria-hidden="true"><span class="cursor__label"></span></div>
+    <script type="application/json" id="kuki-i18n">
+      {
+        {%- assign keys = 'required,email,too_short,phone,consent,select,fix_errors,locating,nearest,geo_denied,geo_unavailable,km_away,showing,image_of,map_frame' | split: ',' -%}
+        {%- for k in keys -%}{%- assign key = 'js.' | append: k -%}{{ k | json }}: {{ key | t | json }}{% unless forloop.last %},{% endunless %}{%- endfor -%}
+      }
+    </script>
+  </body>
+</html>

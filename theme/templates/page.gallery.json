@@ -1,0 +1,225 @@
+{
+  "sections": {
+    "hero": {
+      "type": "page-hero",
+      "settings": {
+        "eyebrow": "Join the community",
+        "title": "The *Gallery*",
+        "text": "Cookies, brookies, cups and the people who love them. Tap any photo to view it full-screen.",
+        "asset": "i-mascot-face"
+      }
+    },
+    "gallery": {
+      "type": "gallery",
+      "settings": {
+        "full": true,
+        "anchor": "photos"
+      },
+      "blocks": {
+        "image_1": {
+          "type": "image",
+          "settings": {
+            "asset": "g-flatlay",
+            "alt": "Flat lay of assorted KUKI cookies and brookies beside a branded box"
+          }
+        },
+        "image_2": {
+          "type": "image",
+          "settings": {
+            "asset": "g-cup-hand",
+            "alt": "A KUKI dessert cup with a spoon, held up inside the store"
+          }
+        },
+        "image_3": {
+          "type": "image",
+          "settings": {
+            "asset": "g-box-pistachio",
+            "alt": "A cookie topped with pistachio cream on a sage green KUKI box"
+          }
+        },
+        "image_4": {
+          "type": "image",
+          "settings": {
+            "asset": "g-selection",
+            "alt": "Close-up of a selection of KUKI cookies, one topped with pink cream"
+          }
+        },
+        "image_5": {
+          "type": "image",
+          "settings": {
+            "asset": "g-cups-store",
+            "alt": "Layered Kuki's & Cream dessert cups in the store"
+          }
+        },
+        "image_6": {
+          "type": "image",
+          "settings": {
+            "asset": "g-swirl-box",
+            "alt": "A cookie with a chocolate cream swirl on a KUKI box"
+          }
+        },
+        "image_7": {
+          "type": "image",
+          "settings": {
+            "asset": "g-mix",
+            "alt": "Assorted KUKI cookies and brownies arranged on a table"
+          }
+        },
+        "image_8": {
+          "type": "image",
+          "settings": {
+            "asset": "g-cup-caramel",
+            "alt": "A caramel Kuki's & Cream cup held in hand"
+          }
+        },
+        "image_9": {
+          "type": "image",
+          "settings": {
+            "asset": "g-box-flatlay",
+            "alt": "Top-down view of KUKI cookies and boxes"
+          }
+        },
+        "image_10": {
+          "type": "image",
+          "settings": {
+            "asset": "g-coffee-flatlay",
+            "alt": "KUKI coffee cups and cookies on a table"
+          }
+        },
+        "image_11": {
+          "type": "image",
+          "settings": {
+            "asset": "g-cups-counter",
+            "alt": "A row of dessert cups on the counter against the checkerboard wall"
+          }
+        },
+        "image_12": {
+          "type": "image",
+          "settings": {
+            "asset": "g-cup-held",
+            "alt": "A Kuki's & Cream cup with biscuit crumble held in hand"
+          }
+        },
+        "image_13": {
+          "type": "image",
+          "settings": {
+            "asset": "g-box-hazelnut",
+            "alt": "A hazelnut cookie on a KUKI box"
+          }
+        },
+        "image_14": {
+          "type": "image",
+          "settings": {
+            "asset": "g-brownie-box",
+            "alt": "A brownie on a KUKI box"
+          }
+        },
+        "image_15": {
+          "type": "image",
+          "settings": {
+            "asset": "g-brookie-box",
+            "alt": "A brookie on a KUKI box"
+          }
+        },
+        "image_16": {
+          "type": "image",
+          "settings": {
+            "asset": "g-brookie-lotus",
+            "alt": "A brookie topped with caramel biscuit crumble"
+          }
+        },
+        "image_17": {
+          "type": "image",
+          "settings": {
+            "asset": "g-brookie-pistachio",
+            "alt": "A brookie topped with pistachio"
+          }
+        },
+        "image_18": {
+          "type": "image",
+          "settings": {
+            "asset": "g-brookie-crumble",
+            "alt": "A brookie with crumble topping on a KUKI box"
+          }
+        },
+        "image_19": {
+          "type": "image",
+          "settings": {
+            "asset": "g-cookie-box",
+            "alt": "A chocolate chip cookie on a KUKI box"
+          }
+        },
+        "image_20": {
+          "type": "image",
+          "settings": {
+            "asset": "g-dark-cookie-box",
+            "alt": "A dark chocolate cookie on a KUKI box"
+          }
+        },
+        "image_21": {
+          "type": "image",
+          "settings": {
+            "asset": "g-lotus-box",
+            "alt": "A caramel biscuit cookie on a KUKI box"
+          }
+        },
+        "image_22": {
+          "type": "image",
+          "settings": {
+            "asset": "g-pink-box",
+            "alt": "A cookie topped with pink cream on a KUKI box"
+          }
+        },
+        "image_23": {
+          "type": "image",
+          "settings": {
+            "asset": "g-assortment",
+            "alt": "Assorted KUKI cookies and brookies with their boxes"
+          }
+        },
+        "image_24": {
+          "type": "image",
+          "settings": {
+            "asset": "g-counter",
+            "alt": "Cookies on display at a KUKI store counter"
+          }
+        }
+      },
+      "block_order": [
+        "image_1",
+        "image_2",
+        "image_3",
+        "image_4",
+        "image_5",
+        "image_6",
+        "image_7",
+        "image_8",
+        "image_9",
+        "image_10",
+        "image_11",
+        "image_12",
+        "image_13",
+        "image_14",
+        "image_15",
+        "image_16",
+        "image_17",
+        "image_18",
+        "image_19",
+        "image_20",
+        "image_21",
+        "image_22",
+        "image_23",
+        "image_24"
+      ]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero",
+    "gallery",
+    "newsletter"
+  ]
+}

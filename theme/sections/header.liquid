@@ -1,0 +1,80 @@
+{%- liquid
+  assign links = section.blocks
+-%}
+<header class="site-header" data-header>
+  <div class="container site-header__inner">
+    <a href="{{ routes.root_url }}" class="wordmark" aria-label="{{ shop.name | escape }} – {{ 'general.home' | t }}">
+      Kuki<span class="wordmark__dot" aria-hidden="true"></span>
+    </a>
+
+    <nav class="primary-nav" aria-label="{{ 'general.main_nav' | t }}">
+      <ul role="list">
+        {%- for block in links -%}
+          {%- assign is_current = false -%}
+          {%- if block.settings.url == request.path -%}{%- assign is_current = true -%}{%- endif -%}
+          <li {{ block.shopify_attributes }}><a href="{{ block.settings.url }}"{% if is_current %} aria-current="page"{% endif %}>{{ block.settings.label | escape }}</a></li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn--sm header-order" href="{{ settings.order_url }}" target="_blank" rel="noopener" data-magnetic>
+        <span class="btn__label-long">{{ section.settings.order_label | escape }}</span>
+        <span class="btn__label-short">{{ 'general.order' | t }}</span>
+        {% render 'kuki-icon', name: 'cookie', class: 'btn__icon' %}
+        <span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span>
+      </a>
+      <button type="button" class="menu-toggle" aria-controls="mobile-menu" aria-haspopup="dialog" data-menu-open>
+        <span aria-hidden="true"></span><span class="visually-hidden">{{ 'general.open_menu' | t }}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog class="mobile-menu on-dark" id="mobile-menu" aria-label="{{ 'general.main_nav' | t }}">
+  <div class="mobile-menu__inner">
+    <div class="mobile-menu__top">
+      <a href="{{ routes.root_url }}" class="wordmark">Kuki<span class="wordmark__dot" aria-hidden="true"></span></a>
+      <button type="button" class="icon-btn" data-dialog-close aria-label="{{ 'general.close_menu' | t }}">{% render 'kuki-icon', name: 'close' %}</button>
+    </div>
+    <nav aria-label="{{ 'general.main_nav' | t }}">
+      <ul role="list">
+        {%- for block in links -%}
+          <li style="--i: {{ forloop.index0 }}"><a href="{{ block.settings.url }}"{% if block.settings.url == request.path %} aria-current="page"{% endif %}><small>0{{ forloop.index }}</small>{{ block.settings.label | escape }}</a></li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+    <div class="mobile-menu__foot">
+      <a class="btn btn--caramel" href="{{ settings.order_url }}" target="_blank" rel="noopener">{{ section.settings.order_label | escape }} {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}<span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span></a>
+      {%- if settings.instagram_url != blank -%}
+        <a class="link-arrow" href="{{ settings.instagram_url }}" target="_blank" rel="noopener">{% render 'kuki-icon', name: 'instagram' %} @kuki.ath<span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span></a>
+      {%- endif -%}
+    </div>
+  </div>
+</dialog>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "settings": [
+    { "type": "text", "id": "order_label", "label": "Order button label", "default": "Order now" }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Link",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Menu" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "link", "settings": { "label": "Home", "url": "/" } },
+      { "type": "link", "settings": { "label": "Menu", "url": "/pages/menu" } }
+    ]
+  }
+}
+{% endschema %}

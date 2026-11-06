@@ -1,0 +1,77 @@
+{%- comment -%}
+  Immersive hero.
+  - The headline, copy and CTAs are plain HTML: readable, crawlable and interactive before any JS.
+  - A real KUKI cookie photo is the instant static fallback (and the LCP image on mobile).
+  - assets/kuki.js lazy-loads the WebGL cookie (assets/kuki-hero3d-*.js + three.js) only when the
+    device can afford it; it fades in over the photo. No WebGL / Save-Data / weak device → photo stays.
+{%- endcomment -%}
+<section class="hero" data-hero aria-labelledby="hero-title" data-quality="{{ section.settings.quality | escape }}">
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      <h1 class="hero__title" id="hero-title">
+        <span class="line">{{ section.settings.title_1 | escape }}</span>
+        <span class="line"><em>{{ section.settings.title_2 | escape }}</em></span>
+      </h1>
+      <p class="hero__lede">{{ section.settings.text | escape }}</p>
+      <div class="btn-row">
+        <a class="btn btn--caramel" href="{{ settings.order_url }}" target="_blank" rel="noopener" data-magnetic>
+          {{ section.settings.cta_primary | escape }} {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}
+          <span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span>
+        </a>
+        <a class="btn btn--ghost" href="{{ section.settings.cta_secondary_url | default: '#lineup' }}" data-magnetic>{{ section.settings.cta_secondary | escape }}</a>
+      </div>
+      <ul class="hero__badges" role="list">
+        {%- for block in section.blocks -%}
+          <li class="chip" {{ block.shopify_attributes }}>{% render 'kuki-icon', name: block.settings.icon %}{{ block.settings.text | escape }}</li>
+        {%- endfor -%}
+      </ul>
+    </div>
+
+    <div class="hero__stage" data-hero-stage>
+      <div class="hero__shadow" aria-hidden="true"></div>
+      <div class="hero__fallback">
+        {%- render 'kuki-picture', image: section.settings.fallback_image, name: 'c-cookie-1', alt: section.settings.fallback_alt, sizes: '(min-width: 900px) 600px, 84vw', priority: true -%}
+      </div>
+      <canvas class="hero__canvas" data-hero-canvas aria-hidden="true" tabindex="-1"></canvas>
+    </div>
+  </div>
+  {%- render 'kuki-picture', name: 'i-mascot-wave', alt: '', class: 'hero__mascot', sizes: '130px' -%}
+  <a class="hero__scroll" href="#story"><i aria-hidden="true"></i>{{ 'hero.scroll' | t }}</a>
+</section>
+
+{% schema %}
+{
+  "name": "Hero (3D cookie)",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Handmade cookies · Athens" },
+    { "type": "text", "id": "title_1", "label": "Headline line 1", "default": "Eaten in" },
+    { "type": "text", "id": "title_2", "label": "Headline line 2 (italic)", "default": "seconds." },
+    { "type": "textarea", "id": "text", "label": "Supporting text", "default": "Soft, buttery, ridiculously good cookies, baked fresh every day in Athens." },
+    { "type": "text", "id": "cta_primary", "label": "Primary button (links to theme setting Order URL)", "default": "Order your cookies" },
+    { "type": "text", "id": "cta_secondary", "label": "Secondary button", "default": "Explore the menu" },
+    { "type": "url", "id": "cta_secondary_url", "label": "Secondary button link" },
+    { "type": "image_picker", "id": "fallback_image", "label": "Static cookie image (shown before / instead of 3D)" },
+    { "type": "text", "id": "fallback_alt", "label": "Static image alt text", "default": "A freshly baked KUKI chocolate chip cookie" },
+    {
+      "type": "select", "id": "quality", "label": "3D cookie",
+      "options": [
+        { "value": "auto", "label": "Adaptive (recommended)" },
+        { "value": "off", "label": "Off – always use the photo" }
+      ],
+      "default": "auto"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge", "name": "Badge",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "options": [ { "value": "sun", "label": "Sun" }, { "value": "whisk", "label": "Whisk" }, { "value": "wheat", "label": "Wheat" }, { "value": "badge", "label": "Badge" } ], "default": "sun" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Baked fresh daily" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Hero (3D cookie)" }]
+}
+{% endschema %}

@@ -1,0 +1,35 @@
+{%- comment -%}
+  Responsive, CLS-safe image.
+  - image:     optional Shopify image (from an image_picker) – served via Shopify's image CDN (auto WebP/AVIF)
+  - name:      fallback theme-asset base name (built by scripts/build-assets.mjs → <name>-sm/-lg .avif/.webp)
+  - alt:       alt text ('' for decorative)
+  - sizes:     sizes attribute (default 100vw)
+  - priority:  true for above-the-fold LCP images (eager + fetchpriority=high)
+  - class / img_class
+{%- endcomment -%}
+{%- liquid
+  assign sizes = sizes | default: '100vw'
+  assign loading = 'lazy'
+  assign fetch = 'auto'
+  if priority
+    assign loading = 'eager'
+    assign fetch = 'high'
+  endif
+-%}
+{%- if image != blank -%}
+  <picture class="{{ class }}">
+    {{- image | image_url: width: 1600 | image_tag: widths: '360, 480, 720, 960, 1200, 1600', sizes: sizes, alt: alt, loading: loading, fetchpriority: fetch, decoding: 'async', class: img_class -}}
+  </picture>
+{%- else -%}
+  {%- capture dims -%}{%- render 'kuki-asset-dims', name: name -%}{%- endcapture -%}
+  {%- assign d = dims | strip | split: ' ' -%}
+  {%- assign sm_avif = name | append: '-sm.avif' | asset_url -%}
+  {%- assign lg_avif = name | append: '-lg.avif' | asset_url -%}
+  {%- assign sm_webp = name | append: '-sm.webp' | asset_url -%}
+  {%- assign lg_webp = name | append: '-lg.webp' | asset_url -%}
+  <picture class="{{ class }}">
+    <source type="image/avif" srcset="{{ sm_avif }} {{ d[2] }}w, {{ lg_avif }} {{ d[0] }}w" sizes="{{ sizes }}">
+    <img src="{{ lg_webp }}" srcset="{{ sm_webp }} {{ d[2] }}w, {{ lg_webp }} {{ d[0] }}w" sizes="{{ sizes }}"
+      width="{{ d[0] }}" height="{{ d[1] }}" alt="{{ alt | escape }}" loading="{{ loading }}" fetchpriority="{{ fetch }}" decoding="async"{% if img_class %} class="{{ img_class }}"{% endif %}>
+  </picture>
+{%- endif -%}

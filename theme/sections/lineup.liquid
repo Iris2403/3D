@@ -1,0 +1,60 @@
+{%- comment -%}
+  "The Line-Up" — horizontal product carousel.
+  Native scroll-snap (touch, trackpad, keyboard and screen readers work with no JS); kuki.js adds
+  prev/next buttons, progress, and mouse drag. Each card opens the product dialog.
+{%- endcomment -%}
+<section class="section lineup" id="lineup" aria-labelledby="lineup-title">
+  <div class="container section-head section-head--split">
+    <div>
+      <p class="eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+      <h2 class="h1" id="lineup-title" data-split style="margin-top: 1rem">{% render 'kuki-split-text', text: section.settings.title %}</h2>
+    </div>
+    <div>
+      <p class="lede" data-reveal>{{ section.settings.text | escape }}</p>
+      <a class="link-arrow" href="{{ section.settings.link_url | default: '/pages/menu' }}" style="margin-top: 1rem" data-reveal>{{ section.settings.link_label | escape }} {% render 'kuki-icon', name: 'arrow' %}</a>
+    </div>
+  </div>
+
+  <div class="carousel" data-carousel role="region" aria-roledescription="carousel" aria-label="{{ 'menu.carousel_label' | t }}">
+    <ul class="carousel__track" role="list" data-carousel-track tabindex="0" aria-label="{{ 'menu.carousel_hint' | t }}">
+      {%- for block in section.blocks -%}
+        <li aria-label="{{ forloop.index }} / {{ forloop.length }}" data-reveal style="--d: {{ forloop.index0 | at_most: 4 }}">
+          {%- render 'kuki-product-card', item: block, sizes: '(min-width: 600px) 340px, 78vw' -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+    <div class="container carousel__ui">
+      <div class="carousel__progress" aria-hidden="true"><span data-carousel-progress></span></div>
+      <div class="carousel__buttons">
+        <button type="button" class="icon-btn" data-carousel-prev aria-label="{{ 'menu.previous' | t }}" disabled>{% render 'kuki-icon', name: 'arrow-left' %}</button>
+        <button type="button" class="icon-btn" data-carousel-next aria-label="{{ 'menu.next' | t }}">{% render 'kuki-icon', name: 'arrow' %}</button>
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Product carousel",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Haven't ordered yet?" },
+    { "type": "text", "id": "title", "label": "Title", "default": "The *Line-Up*" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "A small but dangerous menu of soft cookies." },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Full menu" },
+    { "type": "url", "id": "link_url", "label": "Link" }
+  ],
+  "blocks": [
+    {
+      "type": "product", "name": "Menu item",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name" },
+        { "type": "select", "id": "category", "label": "Category", "options": [ { "value": "cookies", "label": "Cookies" }, { "value": "cream", "label": "Kuki's & Cream" }, { "value": "coffee", "label": "Coffee" }, { "value": "hot_chocolate", "label": "Hot Chocolate" }, { "value": "rolls", "label": "Kuki Rolls" } ], "default": "cookies" },
+        { "type": "text", "id": "price", "label": "Price (number only, e.g. 3.60) – leave empty to hide" },
+        { "type": "textarea", "id": "description", "label": "Description (only verified ingredients)" },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "asset", "label": "Fallback theme image (developer)", "info": "Base name of a built theme asset, e.g. m-classic-kuki" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Product carousel" }]
+}
+{% endschema %}

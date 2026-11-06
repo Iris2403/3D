@@ -1,0 +1,58 @@
+{
+  "sections": {
+    "hero": {
+      "type": "page-hero",
+      "settings": {
+        "eyebrow": "Contact",
+        "title": "Let's *talk.*",
+        "text": "Franchise and business enquiries, events and corporate gifts — we read every message.",
+        "asset": "i-mascot-milk"
+      }
+    },
+    "form": {
+      "type": "contact-form",
+      "settings": {
+        "text": "Interested in opening the next Kuki? Tell us a little about yourself, your city and your plans, and our team will get back to you."
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {
+        "contact_text": "Prefer a quick chat? Message us on Instagram."
+      },
+      "blocks": {
+        "question_1": {
+          "type": "question",
+          "settings": {
+            "question": "Do you offer vegan or gluten-free options?",
+            "answer": "Yes. We offer selected vegan and gluten-free cookie options to accommodate different dietary preferences. Availability may vary depending on the season and product range. If you have specific dietary requirements or allergies, please contact us before placing your order and our team will be happy to assist."
+          }
+        },
+        "question_2": {
+          "type": "question",
+          "settings": {
+            "question": "How long do cookies stay fresh?",
+            "answer": "Our cookies are baked fresh daily for the best taste and texture. We recommend enjoying them within 3–5 days of purchase when stored in an airtight container at room temperature. For longer storage, cookies can be frozen and enjoyed later."
+          }
+        },
+        "question_3": {
+          "type": "question",
+          "settings": {
+            "question": "Can I order cookies for events or corporate gifts?",
+            "answer": "Absolutely. KUKI Athens offers custom cookie orders for corporate events, business gifts, celebrations, weddings, birthdays, and special occasions. We can accommodate larger quantities and discuss customized packaging or branding options depending on your requirements."
+          }
+        }
+      },
+      "block_order": [
+        "question_1",
+        "question_2",
+        "question_3"
+      ]
+    }
+  },
+  "order": [
+    "hero",
+    "form",
+    "faq"
+  ]
+}

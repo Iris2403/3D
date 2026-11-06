@@ -1,0 +1,9 @@
+<section class="page-hero" aria-labelledby="page-title">
+  <div class="container">
+    <h1 class="page-hero__title" id="page-title">{{ page.title | escape }}</h1>
+  </div>
+</section>
+<section class="section" style="padding-top: 0">
+  <div class="container rte">{{ page.content }}</div>
+</section>
+{% schema %}{ "name": "Page content", "settings": [] }{% endschema %}

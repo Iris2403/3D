@@ -1,0 +1,46 @@
+{%- comment -%}
+  Newsletter = Shopify's native customer form (same as the previous theme): Shopify validates server-side,
+  applies its bot protection / rate limits and stores the email as a subscribed customer tagged "newsletter".
+  We collect the email only. kuki.js adds accessible client-side validation on top (never instead).
+{%- endcomment -%}
+<section class="section section--tight newsletter" id="newsletter" aria-labelledby="nl-title-{{ section.id }}">
+  <div class="container">
+    <div class="newsletter__card" data-reveal="scale">
+      {%- render 'kuki-picture', name: 'c-cookie-6', alt: '', class: 'newsletter__crumbs', sizes: '480px' -%}
+      <div>
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        <h2 class="h2" id="nl-title-{{ section.id }}" style="margin-top: 1rem">{{ section.settings.title | escape | replace: '*', '' }}</h2>
+        <p class="lede" style="margin-top: 1rem">{{ section.settings.text | escape }}</p>
+      </div>
+      {%- assign form_id = 'newsletter-' | append: section.id -%}
+      {%- form 'customer', id: form_id, class: 'newsletter__form', novalidate: 'novalidate', data-validate: '' -%}
+        {%- render 'kuki-form-status', form: form, success: section.settings.success -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <input type="hidden" name="contact[Source]" value="Newsletter">
+        <div class="field">
+          <label for="nl-email-{{ section.id }}">{{ 'forms.email' | t }} <span class="req" aria-hidden="true">*</span></label>
+          <div class="newsletter__inline">
+            <input class="input" id="nl-email-{{ section.id }}" type="email" name="contact[email]" required maxlength="254"
+              autocomplete="email" inputmode="email" spellcheck="false" placeholder="you@example.com"
+              aria-describedby="nl-err-{{ section.id }} nl-privacy-{{ section.id }}">
+            <button class="btn" type="submit">{{ 'forms.subscribe' | t }} {% render 'kuki-icon', name: 'arrow', class: 'btn__icon' %}</button>
+          </div>
+          <p class="field__error" id="nl-err-{{ section.id }}" data-error hidden></p>
+        </div>
+        <p class="privacy-note" id="nl-privacy-{{ section.id }}">{{ 'forms.newsletter_privacy' | t }} <a href="/policies/privacy-policy">{{ 'footer.privacy' | t }}</a>.</p>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Newsletter" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Subscribe to our newsletter" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "And never miss the latest updates!" },
+    { "type": "text", "id": "success", "label": "Success message", "default": "You're on the list. Thanks for subscribing!" }
+  ],
+  "presets": [{ "name": "Newsletter" }]
+}
+{% endschema %}

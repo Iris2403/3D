@@ -1,0 +1,12 @@
+{%- comment -%} Full-screen gallery viewer (native <dialog>: focus trap, Esc, inert background). Arrow keys + swipe in kuki.js. {%- endcomment -%}
+<dialog class="sheet lightbox" id="lightbox" aria-label="{{ 'gallery.viewer' | t }}">
+  <button type="button" class="icon-btn sheet__close" data-dialog-close aria-label="{{ 'general.close' | t }}">{% render 'kuki-icon', name: 'close' %}</button>
+  <figure class="lightbox__figure">
+    <picture><source type="image/avif" data-lb-avif><img data-lb-img alt="" width="1200" height="900" decoding="async"></picture>
+  </figure>
+  <div class="lightbox__bar">
+    <button type="button" class="icon-btn" data-lb-prev aria-label="{{ 'gallery.previous' | t }}">{% render 'kuki-icon', name: 'arrow-left' %}</button>
+    <p class="lightbox__count" aria-live="polite" data-lb-count></p>
+    <button type="button" class="icon-btn" data-lb-next aria-label="{{ 'gallery.next' | t }}">{% render 'kuki-icon', name: 'arrow' %}</button>
+  </div>
+</dialog>
