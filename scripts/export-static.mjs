@@ -6,6 +6,7 @@
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync, cpSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -43,7 +44,34 @@ function rewrite(html) {
   html = html.replace(/(\s(?:href|src|action|poster|content|data-[\w-]+)=")\/(?!\/)/g, `$1${BASE}/`);
   html = html.replace(/((?:srcset|imagesrcset)=")([^"]*)"/g, (_, a, v) => `${a}${v.replace(/(^|,\s*)\/(?!\/)/g, `$1${BASE}/`)}"`);
   html = html.replace(/url\(\/(?!\/)/g, `url(${BASE}/`);
-  return html.replace('</body>', `${PAGES_NOTICE}\n</body>`);
+  html = html.replace('</body>', `${PAGES_NOTICE}\n</body>`);
+  return withCsp(html);
+}
+
+// GitHub Pages can't send response headers, so the preview gets the strictest policy a <meta> tag
+// can carry: scripts only from this origin plus the exact inline scripts on the page (by hash).
+// (frame-ancestors, X-Frame-Options, nosniff and Permissions-Policy are header-only; Shopify sends
+// the first three itself on the real store.)
+function withCsp(html) {
+  const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(
+    (m) => `'sha256-${createHash('sha256').update(m[1], 'utf8').digest('base64')}'`,
+  );
+  const csp = [
+    "default-src 'self'",
+    `script-src 'self' 'wasm-unsafe-eval' ${hashes.join(' ')}`, // wasm: the 3D model's meshopt decoder
+    "style-src 'self' 'unsafe-inline'", // style="--i: n" custom properties only
+    "img-src 'self' data: blob:",
+    "font-src 'self'",
+    "media-src 'self'",
+    "connect-src 'self' data: blob:",
+    "worker-src 'self' blob:",
+    'frame-src https://www.google.com https://maps.google.com',
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    'upgrade-insecure-requests',
+  ].join('; ');
+  return html.replace(/<meta http-equiv="Content-Security-Policy" content="[^"]*">/, `<meta http-equiv="Content-Security-Policy" content="${csp}">`);
 }
 
 const server = spawn(process.execPath, [join(root, 'preview', 'server.mjs')], { env: { ...process.env, PORT: String(PORT) }, stdio: ['ignore', 'pipe', 'inherit'] });

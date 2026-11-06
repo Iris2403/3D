@@ -147,6 +147,14 @@ dialogs, the carousel buttons, filtering and so on.
   referrer policy. A full `script-src` allowlist can't be set from a Shopify theme without breaking
   Shopify's own injected scripts. If that's ever required, it has to be done at the edge (e.g. a
   Cloudflare worker) or in a headless build.
+- The GitHub Pages preview can't send response headers, so `scripts/export-static.mjs` gives it a strict
+  `<meta>` CSP instead: scripts only from the site itself plus the page's exact inline scripts (by
+  SHA-256 hash), and no plugins, foreign forms or foreign frames except the Google Map. Header-only
+  protections (`X-Frame-Options`, `nosniff`, `Permissions-Policy`, `frame-ancestors`) can't be set on
+  Pages. Header scanners such as securityheaders.com only read real headers, so they will still flag
+  the preview. On the store, Shopify sends `X-Frame-Options: DENY`, `nosniff`, HSTS and a CSP with
+  `frame-ancestors 'none'` (checked on kukiworld.com, Nov 2026). A `Permissions-Policy` header would need
+  an edge proxy such as Cloudflare.
 - Geolocation is requested only when the visitor clicks "Find my nearest Kuki", and the position
   never leaves the device.
 
