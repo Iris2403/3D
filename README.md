@@ -97,13 +97,16 @@ npm run templates      # re-generate templates/*.json from scripts/gen-templates
 ## Architecture notes
 
 **3D hero** (`src/modules/hero3d.ts`)
-- The cookie is the **Sea Salt Chocolate Chip Cookie** design (`src/modules/hero3d.ts`): a puffy,
-  hand-shaped body textured with KUKI's own dough (`theme/assets/cookie-dough.webp`, synthesised from
-  the real cookie photo by `scripts/build-dough-texture.py`; triplanar-mapped so the edge has real crust
-  texture too, and colour-graded to the reference render), lathe-turned
-  chocolate discs and a bevelled chocolate chunk in a glossy clear-coat material, Maldon-style salt
-  flakes and pyramids, baked crumbs, and contact shading around the chocolate. Studio reflections
-  come from a room environment map; soft real-time shadows are on for capable devices only.
+- The cookie is a **real 3D model of the Classic Kuki**: `theme/assets/kuki-cookie.glb` (glTF 2.0,
+  511 KB, ~17.8k vertices, validated with the Khronos glTF validator: 0 errors, 0 warnings).
+  It is reconstructed from the product render `source-assets/kuki-cookie-render.webp`:
+  `scripts/build-cookie-maps.py` unwarps the 3/4 shot into a top-down colour map, unwraps the
+  visible side wall, and derives a relief map (melted chocolate, crumble and salt stand proud), a
+  normal map (crust detail) and the cookie's real outline; `scripts/build-cookie-glb.mjs` builds
+  the mesh (domed relief top, puffy rim, side wall, base) with MikkTSpace tangents and writes the GLB
+  (meshopt-compressed geometry, WebP textures). The underside, never visible in the photo, is
+  synthesised from the side crust. To use a different model (e.g. a photogrammetry scan), upload it
+  in Settings → Files and paste its URL in the hero section's "3D model URL" setting.
 - **Floating chocolate chips, small chunks and salt flakes** drift around the cookie and spread out
   as you scroll away.
 - The static hero image is the 3D cookie's own first frame (`scripts/render-hero-fallback.mjs`), so

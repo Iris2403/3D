@@ -32,7 +32,7 @@
       <div class="hero__fallback">
         {%- render 'kuki-picture', image: section.settings.fallback_image, name: 'c-hero-cookie', alt: section.settings.fallback_alt, sizes: '(min-width: 900px) 840px, 104vw', priority: true -%}
       </div>
-      <canvas class="hero__canvas" data-hero-canvas data-texture="{{ 'cookie-dough.webp' | asset_url }}" aria-hidden="true" tabindex="-1"></canvas>
+      <canvas class="hero__canvas" data-hero-canvas data-model="{%- if section.settings.model_url != blank -%}{{ section.settings.model_url | escape }}{%- else -%}{{ 'kuki-cookie.glb' | asset_url }}{%- endif -%}" aria-hidden="true" tabindex="-1"></canvas>
     </div>
   </div>
   {%- render 'kuki-picture', name: 'i-mascot-wave', alt: '', class: 'hero__mascot', sizes: '130px' -%}
@@ -51,6 +51,7 @@
     { "type": "text", "id": "cta_secondary", "label": "Secondary button", "default": "Explore the menu" },
     { "type": "url", "id": "cta_secondary_url", "label": "Secondary button link" },
     { "type": "image_picker", "id": "fallback_image", "label": "Static cookie image (shown before / instead of 3D)" },
+    { "type": "text", "id": "model_url", "label": "3D model URL (.glb) — optional", "info": "Leave empty to use the theme's kuki-cookie.glb. To use another model, upload it in Settings → Files and paste its URL here." },
     { "type": "text", "id": "fallback_alt", "label": "Static image alt text", "default": "A freshly baked KUKI cookie with dark chocolate chips and a square of chocolate" },
     {
       "type": "select", "id": "quality", "label": "3D cookie",
