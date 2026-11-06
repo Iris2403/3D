@@ -107,8 +107,14 @@ npm run templates      # re-generate templates/*.json from scripts/gen-templates
   (meshopt-compressed geometry, WebP textures). The underside, never visible in the photo, is
   synthesised from the side crust. To use a different model (e.g. a photogrammetry scan), upload it
   in Settings → Files and paste its URL in the hero section's "3D model URL" setting.
-- **Floating chocolate chips, small chunks and salt flakes** drift around the cookie and spread out
-  as you scroll away.
+- **The dunk:** the cookie is held at an angle and dunked edge-first into a pool of milk, so its
+  underside is always below the surface. Milk clings to the dunked edge (a world-space film with a
+  wavy line and drips), the surface ripples out from the dunk (vertex shader with analytic normals),
+  and a slow-motion splash — a meniscus lip, a low crown and tapered jets carrying droplets about to
+  break off, plus droplets in flight — surrounds the entry. Scrolling dunks the cookie deeper.
+- **Floating ingredients:** teardrop chocolate chips, broken chocolate pieces (fractured sides,
+  smooth glossy tops, cocoa sheen), sea-salt crystals (cubes and hollow Maldon pyramids) and crumbs,
+  each tumbling with constant angular momentum.
 - The static hero image is the 3D cookie's own first frame (`scripts/render-hero-fallback.mjs`), so
   the hand-over from image to 3D is seamless. After changing the 3D, re-run that script and then
   `npm run assets`.

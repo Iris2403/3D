@@ -348,6 +348,8 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
 .hero__canvas { position: absolute; inset: -12%; width: 124%; max-width: none; height: 124%; opacity: 0; transition: opacity 1.1s var(--ease-out); pointer-events: none; }
 .hero__stage { touch-action: pan-y; }
 .hero.is-3d .hero__shadow { opacity: 0; }
+.hero__mascot { transition: opacity 0.8s; }
+.hero.is-3d .hero__mascot { opacity: 0; } /* the milk pool takes its place */
 .hero__canvas { -webkit-mask-image: linear-gradient(#000 74%, transparent 96%); mask-image: linear-gradient(#000 74%, transparent 96%); }
 .hero__shadow { transition: opacity 0.8s; }
 .hero.is-3d .hero__canvas { opacity: 1; }
