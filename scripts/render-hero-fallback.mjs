@@ -24,11 +24,11 @@ await page.addStyleTag({
   content: `html, body, .hero { background: transparent !important; }
     body > :not(main), .hero__copy, .hero__fallback, .hero__mascot, .hero__scroll, .hero__shadow,
     main > :not(:first-child) { visibility: hidden !important; }
-    .hero__canvas { -webkit-mask-image: none !important; mask-image: none !important; }`,
+    .hero__canvas { -webkit-mask-image: none !important; mask-image: none !important; transition: none !important; }`,
 });
 await page.keyboard.press('Shift'); // first interaction → loads the 3D (no pointer tilt)
-await page.waitForSelector('.hero.is-3d', { timeout: 30000 });
-await page.waitForTimeout(1800); // fade-in complete
+await page.waitForSelector('.hero.is-3d', { timeout: 60000 });
+await page.waitForTimeout(80); // the very first frame (no fade: transition disabled above)
 const canvas = page.locator('[data-hero-canvas]');
 await canvas.screenshot({ path: out, omitBackground: true });
 await browser.close();

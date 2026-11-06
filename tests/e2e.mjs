@@ -117,10 +117,9 @@ await test('carousel next/prev buttons scroll the line-up', async () => {
   await track.scrollIntoViewIfNeeded();
   const before = await track.evaluate((el) => el.scrollLeft);
   await page.click('[data-carousel-next]');
-  await page.waitForTimeout(800);
-  const after = await track.evaluate((el) => el.scrollLeft);
-  assert(after > before, 'did not scroll');
-  assert(!(await page.locator('[data-carousel-prev]').isDisabled()), 'prev still disabled');
+  // Wait for the outcome rather than a fixed delay (the click may also start the 3D hero).
+  await page.waitForFunction((b) => document.querySelector('[data-carousel-track]').scrollLeft > b, before, { timeout: 8000 });
+  await page.waitForFunction(() => !document.querySelector('[data-carousel-prev]').disabled, null, { timeout: 8000 });
   await page.context().close();
 });
 
