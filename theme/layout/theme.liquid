@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#fbf6ec">
+    <meta name="theme-color" content="#fffaea">
     {%- comment -%}
       Security: Shopify already serves HSTS, X-Frame-Options: DENY, nosniff and a CSP with
       frame-ancestors 'none'. A script-src allowlist cannot be set from a theme without breaking
@@ -31,8 +31,8 @@
 
     {%- if template.name == 'index' -%}
       {%- comment -%} The hero's static cookie is the LCP candidate on mobile: fetch it first. {%- endcomment -%}
-      {%- capture hero_srcset -%}{{ 'c-cookie-1-sm.avif' | asset_url }} 480w, {{ 'c-cookie-1-lg.avif' | asset_url }} 600w{%- endcapture -%}
-      {{ 'c-cookie-1-lg.avif' | asset_url | preload_tag: as: 'image', type: 'image/avif', fetchpriority: 'high', imagesrcset: hero_srcset, imagesizes: '(min-width: 900px) 600px, 84vw' }}
+      {%- capture hero_srcset -%}{{ 'c-hero-cookie-sm.avif' | asset_url }} 480w, {{ 'c-hero-cookie-lg.avif' | asset_url }} 1200w{%- endcapture -%}
+      {{ 'c-hero-cookie-lg.avif' | asset_url | preload_tag: as: 'image', type: 'image/avif', fetchpriority: 'high', imagesrcset: hero_srcset, imagesizes: '(min-width: 900px) 840px, 104vw' }}
     {%- endif -%}
 
     <script>document.documentElement.classList.replace('no-js', 'js');</script>

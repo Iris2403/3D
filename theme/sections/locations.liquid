@@ -57,8 +57,8 @@
           </defs>
           <rect width="600" height="640" fill="url(#dots-{{ section.id }})"/>
           {%- comment -%} Schematic Saronic Gulf (decorative, not to scale) {%- endcomment -%}
-          <path d="M0 470 C 60 455, 95 470, 115 445 C 160 470, 190 505, 245 525 C 300 545, 345 600, 410 640 L 0 640 Z" fill="#a9c1c9" opacity=".55"/>
-          <text x="40" y="590" font-family="Georgia, serif" font-style="italic" font-size="22" fill="#2f4c57" opacity=".7">{{ 'locations.sea' | t }}</text>
+          <path d="M0 470 C 60 455, 95 470, 115 445 C 160 470, 190 505, 245 525 C 300 545, 345 600, 410 640 L 0 640 Z" fill="#c3d1ad" opacity=".55"/>
+          <text x="40" y="590" font-family="Georgia, serif" font-style="italic" font-size="22" fill="#3f5130" opacity=".7">{{ 'locations.sea' | t }}</text>
           {%- comment -%} Athens centre marker {%- endcomment -%}
           {%- assign cx = 23.7275 | minus: min_lng | divided_by: lng_span | times: 560 | plus: 20 -%}
           {%- assign cy = max_lat | minus: 37.9755 | divided_by: lat_span | times: 600 | plus: 20 -%}

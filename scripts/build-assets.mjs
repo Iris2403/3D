@@ -50,6 +50,8 @@ const images = {
   'm-kuki-roll-salted-caramel': 'E3PKktRGulmiTHP0FuAIDDJpU',
   'm-kuki-roll-belgian': '9BXGXfYZPgcUOC6uJE7O9jplOA',
   'm-kuki-roll-fistiki': 'cjWRFgtRAYby5uDbJKFD1Wd5LyQ',
+  // ---- Hero: first frame of the 3D cookie (scripts/render-hero-fallback.mjs), transparent PNG
+  'c-hero-cookie': 'hero-cookie-render.png',
   // ---- Transparent cut-outs
   'c-cookie-1': 'Q84IqwlizS458fY1jVkYtX9wLso',
   'c-cookie-2': 'TUvQ5AiLhFtleEHZBYem2oSs7g',
@@ -99,7 +101,7 @@ const LG = 1200;
 
 const dims = [];
 for (const [name, file] of Object.entries(images)) {
-  const input = join(SRC, `${file}.webp`);
+  const input = join(SRC, file.includes('.') ? file : `${file}.webp`);
   const meta = await sharp(input).metadata();
   const lgW = Math.min(LG, meta.width);
   const smW = Math.min(SM, meta.width);
@@ -121,8 +123,8 @@ liquid += `{%- else -%}1200 900 480\n{%- endcase -%}\n`;
 writeFileSync(join(SNIPPETS, 'kuki-asset-dims.liquid'), liquid);
 
 // Favicon / touch icon / social share image
-await sharp(join(SRC, 'kuki-favicon.png')).resize(64, 64, { fit: 'contain', background: '#F6EEDF' }).png().toFile(join(OUT, 'favicon-64.png'));
-await sharp(join(SRC, 'kuki-favicon.png')).resize(180, 180, { fit: 'contain', background: '#F6EEDF' }).png().toFile(join(OUT, 'apple-touch-icon.png'));
+await sharp(join(SRC, 'kuki-favicon.png')).resize(64, 64, { fit: 'contain', background: '#FFFAEA' }).png().toFile(join(OUT, 'favicon-64.png'));
+await sharp(join(SRC, 'kuki-favicon.png')).resize(180, 180, { fit: 'contain', background: '#FFFAEA' }).png().toFile(join(OUT, 'apple-touch-icon.png'));
 await sharp(join(SRC, '89s36C4daYLnsMpjDTN8yzt6s.webp')).resize(1200, 630, { fit: 'cover' }).jpeg({ quality: 78, mozjpeg: true }).toFile(join(OUT, 'og-image.jpg'));
 
 // ---- Fonts: pin Fraunces to its soft display cut, subset to Latin; Manrope Latin + Greek.

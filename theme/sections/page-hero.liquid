@@ -5,7 +5,7 @@
     {%- if section.settings.text != blank -%}<p class="lede" style="margin-top: 1.25rem" data-reveal>{{ section.settings.text | escape }}</p>{%- endif -%}
     {%- if section.settings.show_order -%}
       <div class="btn-row" style="margin-top: 1.75rem" data-reveal>
-        <a class="btn btn--caramel" href="{{ settings.order_url }}" target="_blank" rel="noopener" data-magnetic>{{ settings.order_label | escape }} {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}<span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span></a>
+        <a class="btn btn--butter" href="{{ settings.order_url }}" target="_blank" rel="noopener" data-magnetic>{{ settings.order_label | escape }} {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}<span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span></a>
       </div>
     {%- endif -%}
   </div>

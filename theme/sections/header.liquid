@@ -45,7 +45,7 @@
       </ul>
     </nav>
     <div class="mobile-menu__foot">
-      <a class="btn btn--caramel" href="{{ settings.order_url }}" target="_blank" rel="noopener">{{ section.settings.order_label | escape }} {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}<span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span></a>
+      <a class="btn btn--butter" href="{{ settings.order_url }}" target="_blank" rel="noopener">{{ section.settings.order_label | escape }} {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}<span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span></a>
       {%- if settings.instagram_url != blank -%}
         <a class="link-arrow" href="{{ settings.instagram_url }}" target="_blank" rel="noopener">{% render 'kuki-icon', name: 'instagram' %} @kuki.ath<span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span></a>
       {%- endif -%}

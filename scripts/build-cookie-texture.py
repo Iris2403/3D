@@ -1,61 +1,96 @@
-"""Builds theme/assets/cookie-atlas.webp (512×576): a top-down texture of the real Classic Kuki, made by
-rectifying the oblique product photo (the same one the hero shows before 3D loads).
-The visible top face is an ellipse; stretching it back to a circle gives a top-down view.
-Pixels outside the circle are filled by repeatedly dilating the edge colours, so the 3D rim
-samples real crust colour. Below the top view (rows 512–575) sits a strip made by unwrapping the
-cookie's real side wall (taken from the front edge of the original photo), used for the rim.
+"""Builds the real-cookie assets for the 3D hero from source-assets/hero-cookie-photo.jpg.
+
+Outputs
+  theme/assets/cookie-atlas.webp   1024×1024 top-down view of the centre cookie (the oblique photo,
+                                   unwarped). Its outer ring is the real puffy crust edge, which the
+                                   3D code wraps over the rim.
+  src/modules/cookie-data.ts       chip / chocolate-square positions (texture space) for the 3D
+                                   geometry, so every chip sits exactly where it is in the photo
+
+How: the cookie's top face is a rotated ellipse in the photo (measured by eye on a coordinate
+grid). An affine transform maps it back to a circle. Pixels outside the circle (the baking mat,
+neighbouring cookies) are replaced by dilating the cookie's own edge colours outward.
 Run: python3 scripts/build-cookie-texture.py
 """
+import json
+import math
 from pathlib import Path
-from PIL import Image, ImageFilter
+
 import numpy as np
+from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
-src = Image.open(ROOT / 'source-assets' / 'Q84IqwlizS458fY1jVkYtX9wLso.webp').convert('RGBA')
-alpha = np.array(src)[:, :, 3]
-rows = [(y, np.where(alpha[y] > 128)[0]) for y in range(alpha.shape[0])]
-widths = [(y, r.max() - r.min(), r.min(), r.max()) for y, r in rows if len(r)]
-cy, w, x0, x1 = max(widths, key=lambda t: t[1])  # widest row = centre of the top ellipse
-a = w / 2
-b = a * 0.635                                     # minor/major ratio measured from the silhouette
-box = (int(x0), int(cy - b), int(x1), int(cy + b))
-top = src.crop(box).resize((512, 512), Image.LANCZOS)  # ellipse → circle, upscaled
+SRC = ROOT / 'source-assets' / 'hero-cookie-photo.jpg'
 
-# Circular mask, then fill everything outside it by edge dilation.
-yy, xx = np.mgrid[0:512, 0:512]
-inside = ((xx - 255.5) ** 2 + (yy - 255.5) ** 2) <= (250 ** 2)
-arr = np.array(top).astype(np.float32)
-known = inside & (arr[:, :, 3] > 200)
-rgb = arr[:, :, :3] * known[..., None]
-weight = known.astype(np.float32)
-for _ in range(80):
-    img = Image.fromarray(np.uint8(np.clip(rgb, 0, 255)))
-    blurred = np.array(img.filter(ImageFilter.BoxBlur(2))).astype(np.float32)
-    wblur = np.array(Image.fromarray(np.uint8(weight * 255)).filter(ImageFilter.BoxBlur(2))).astype(np.float32) / 255
+# Top-face ellipse of the centre cookie in the original 1289×1473 photo.
+CX, CY, A, B, ANG = 838, 882, 452, 306, -6.0
+S = 1024           # top view resolution
+CIRCLE = 500       # cookie radius inside the 1024 top view
+
+# Chocolate in the unwarped top view (px): round chips (x, y, radius, height) and the square's top
+# face (corners, height). Heights are in cookie units (cookie radius = 1).
+CHIPS = [
+    (407, 52, 60, 0.045),
+    (708, 180, 68, 0.06),   # the domed one
+    (182, 218, 62, 0.045),
+    (450, 300, 60, 0.045),
+    (540, 268, 30, 0.035),
+    (225, 470, 68, 0.05),
+    (270, 92, 30, 0.03),
+]
+SQUARE = {'corners': [(418, 545), (712, 362), (908, 505), (690, 735)], 'height': 0.13}
+# A plain-dough patch (px), used for the soft interior exposed by the bite.
+DOUGH = (330, 380)
+
+photo = Image.open(SRC).convert('RGB')
+r = math.radians(ANG)
+ca, sa = math.cos(r), math.sin(r)
+half = S / 2
+# Output pixel (x, y) → source = C + Rot(ANG) · (A·u, B·v) with u, v = (x, y)/half − 1: the ellipse
+# lands on the full 512 px circle; CIRCLE trims the outermost edge (where the mat shows through).
+k = 1.0
+a = A / half * ca * k
+b = -B / half * sa * k
+d = A / half * sa * k
+e = B / half * ca * k
+c = CX - a * half - b * half
+f = CY - d * half - e * half
+top = photo.transform((S, S), Image.AFFINE, (a, b, c, d, e, f), resample=Image.BICUBIC)
+
+# Replace everything outside the cookie circle by dilating its edge colours outward.
+yy, xx = np.mgrid[0:S, 0:S]
+inside = ((xx - (S - 1) / 2) ** 2 + (yy - (S - 1) / 2) ** 2) <= (CIRCLE - 2) ** 2
+rgb = np.array(top).astype(np.float32) * inside[..., None]
+known = inside.copy()
+weight = inside.astype(np.float32)
+for _ in range(60):
+    blur = np.array(Image.fromarray(np.uint8(np.clip(rgb, 0, 255))).filter(ImageFilter.BoxBlur(3))).astype(np.float32)
+    wblur = np.array(Image.fromarray(np.uint8(weight * 255)).filter(ImageFilter.BoxBlur(3))).astype(np.float32) / 255
     fill = (~known) & (wblur > 0.05)
-    rgb[fill] = blurred[fill] / np.maximum(wblur[fill, None], 1e-3) * 1.0
-    rgb[fill] = np.clip(rgb[fill], 0, 255)
-    weight = np.maximum(weight, (wblur > 0.05).astype(np.float32))
-    known = known | fill
-out = Image.fromarray(np.uint8(np.clip(rgb, 0, 255)), 'RGB')
+    rgb[fill] = np.clip(blur[fill] / np.maximum(wblur[fill, None], 1e-3), 0, 255)
+    weight[fill] = 1
+    known |= fill
+top_img = Image.fromarray(np.uint8(np.clip(rgb, 0, 255)), 'RGB')
 
-# Side strip: the original photo shows the cookie's real side wall along its front edge. For each
-# column we follow the curved bottom silhouette and take the band just above it, then mirror the
-# result so it tiles seamlessly around the cookie.
-orig = np.array(src.convert('RGB')).astype(np.float32)
-cols = range(int(x0) + 45, int(x1) - 45)
-band = 30
-strip_cols = []
-for x in cols:
-    ys = np.where(alpha[:, x] > 128)[0]
-    yb = ys.max() - 2
-    strip_cols.append(orig[yb - band:yb, x])
-strip = np.stack(strip_cols, axis=1)  # (band, width)
-strip = np.concatenate([strip, strip[:, ::-1]], axis=1)  # mirror → seamless wrap
-strip_img = Image.fromarray(np.uint8(np.clip(strip, 0, 255)), 'RGB').resize((512, 64), Image.LANCZOS)
+atlas = top_img
 
-atlas = Image.new('RGB', (512, 576))
-atlas.paste(out, (0, 0))
-atlas.paste(strip_img, (0, 512))
-atlas.save(ROOT / 'theme' / 'assets' / 'cookie-atlas.webp', quality=88, method=6)
-print('cookie-atlas.webp', atlas.size, 'from crop', box)
+# The photo is a moody, low-key shot; lift it gently (gamma) so it reads freshly baked on the site.
+lut = [round(255 * (i / 255) ** 0.82) for i in range(256)] * 3
+atlas = atlas.point(lut)
+atlas.save(ROOT / 'theme' / 'assets' / 'cookie-atlas.webp', quality=86, method=6)
+
+# Texture-space data for the 3D code (u right, v up, both 0..1 over the top view).
+def uv(px, py):
+    return [round(px / S, 4), round(1 - py / S, 4)]
+
+data = {
+    'uvRadius': round(CIRCLE / S, 4),
+    'dough': uv(*DOUGH),
+    'chips': [{'uv': uv(x, y), 'r': round(rad / S, 4), 'h': h} for x, y, rad, h in CHIPS],
+    'square': {'corners': [uv(x, y) for x, y in SQUARE['corners']], 'h': SQUARE['height']},
+}
+ts = ('// GENERATED by scripts/build-cookie-texture.py from source-assets/hero-cookie-photo.jpg.\n'
+      '// Chocolate positions in texture space (top-view region of cookie-atlas.webp).\n'
+      f'export const COOKIE = {json.dumps(data, indent=2)} as const;\n')
+(ROOT / 'src' / 'modules' / 'cookie-data.ts').write_text(ts)
+print('cookie-atlas.webp', atlas.size, '| chips:', len(CHIPS))

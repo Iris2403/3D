@@ -15,7 +15,7 @@
       </h1>
       <p class="hero__lede">{{ section.settings.text | escape }}</p>
       <div class="btn-row">
-        <a class="btn btn--caramel" href="{{ settings.order_url }}" target="_blank" rel="noopener" data-magnetic>
+        <a class="btn btn--butter" href="{{ settings.order_url }}" target="_blank" rel="noopener" data-magnetic>
           {{ section.settings.cta_primary | escape }} {% render 'kuki-icon', name: 'arrow-up-right', class: 'btn__icon' %}
           <span class="visually-hidden">({{ 'general.opens_new_window' | t }})</span>
         </a>
@@ -29,9 +29,8 @@
     </div>
 
     <div class="hero__stage" data-hero-stage>
-      <div class="hero__shadow" aria-hidden="true"></div>
       <div class="hero__fallback">
-        {%- render 'kuki-picture', image: section.settings.fallback_image, name: 'c-cookie-1', alt: section.settings.fallback_alt, sizes: '(min-width: 900px) 600px, 84vw', priority: true -%}
+        {%- render 'kuki-picture', image: section.settings.fallback_image, name: 'c-hero-cookie', alt: section.settings.fallback_alt, sizes: '(min-width: 900px) 840px, 104vw', priority: true -%}
       </div>
       <canvas class="hero__canvas" data-hero-canvas data-texture="{{ 'cookie-atlas.webp' | asset_url }}" aria-hidden="true" tabindex="-1"></canvas>
     </div>
@@ -52,7 +51,7 @@
     { "type": "text", "id": "cta_secondary", "label": "Secondary button", "default": "Explore the menu" },
     { "type": "url", "id": "cta_secondary_url", "label": "Secondary button link" },
     { "type": "image_picker", "id": "fallback_image", "label": "Static cookie image (shown before / instead of 3D)" },
-    { "type": "text", "id": "fallback_alt", "label": "Static image alt text", "default": "A freshly baked KUKI chocolate chip cookie" },
+    { "type": "text", "id": "fallback_alt", "label": "Static image alt text", "default": "A freshly baked KUKI cookie with dark chocolate chips and a square of chocolate" },
     {
       "type": "select", "id": "quality", "label": "3D cookie",
       "options": [
