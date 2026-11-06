@@ -96,10 +96,13 @@ npm run templates      # re-generate templates/*.json from scripts/gen-templates
 ## Architecture notes
 
 **3D hero** (`src/modules/hero3d.ts`)
-- The cookie is generated procedurally: a domed, cracked, toasted surface built from layered noise;
-  a real bite carved by three overlapping "tooth" circles that exposes the crumbly interior; melted
-  chocolate chunks; sea-salt flakes; floating chocolate, crumbs falling from the bite, and cocoa/flour
-  dust. There's no model or texture download.
+- The cookie is the **real Classic Kuki**: `scripts/build-cookie-texture.py` turns the product photo
+  (the same one the hero shows before 3D loads) into a 50 KB texture atlas. The photo's oblique top
+  face is unwarped into a top-down view, and the cookie's real side wall is taken from the photo's
+  front edge. The photo also drives the surface relief, so the chocolate stands proud. A bite carved
+  by three overlapping "tooth" circles exposes the soft dough; crumbs fall from it, and broken
+  chocolate and cocoa dust float around. If the texture can't load, a fully procedural cookie is
+  used instead.
 - About 6 draw calls (instancing), no shadow maps or post-processing, and a pixel ratio capped at
   1.75 / 1.35.
 - It loads only after the page has loaded **and** the visitor first interacts (move, scroll, touch,

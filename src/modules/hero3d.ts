@@ -24,6 +24,7 @@ import {
   IcosahedronGeometry,
   InstancedMesh,
   Mesh,
+  NoToneMapping,
   MeshBasicMaterial,
   MeshStandardMaterial,
   Object3D,
@@ -34,6 +35,7 @@ import {
   RepeatWrapping,
   Scene,
   SRGBColorSpace,
+  Texture,
   WebGLRenderer,
 } from 'three';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -43,7 +45,56 @@ export interface HeroOptions {
   canvas: HTMLCanvasElement;
   stage: HTMLElement;
   quality: 'high' | 'low';
+  /** Top-down texture of the real cookie (scripts/build-cookie-texture.py). Optional: without it the cookie is fully procedural. */
+  texture?: string;
 }
+
+/** The real cookie photo: the image (for the material) plus a CPU sampler for surface relief. */
+interface Photo {
+  image: HTMLImageElement;
+  /** Returns luminance (0..1) and "chocolate-ness" (0..1, dark brown pixels) at uv. */
+  sample: (u: number, v: number) => { lum: number; choc: number };
+}
+
+async function loadPhoto(url: string): Promise<Photo> {
+  const image = new Image();
+  image.crossOrigin = 'anonymous';
+  image.decoding = 'async';
+  image.src = url;
+  await image.decode();
+  const N = 128;
+  const c = document.createElement('canvas');
+  c.width = c.height = N;
+  const ctx = c.getContext('2d', { willReadFrequently: true })!;
+  ctx.filter = 'blur(1px)';
+  ctx.drawImage(image, 0, 0, 512, 512, 0, 0, N, N); // top-view region of the atlas only
+  const data = ctx.getImageData(0, 0, N, N).data;
+  const sample = (u: number, v: number) => {
+    const x = Math.min(N - 1, Math.max(0, Math.round(u * (N - 1))));
+    const y = Math.min(N - 1, Math.max(0, Math.round((1 - v) * (N - 1))));
+    const i = (y * N + x) * 4;
+    const r = data[i] / 255;
+    const g = data[i + 1] / 255;
+    const b = data[i + 2] / 255;
+    const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    return { lum, choc: smoothstep(0.36, 0.2, lum) };
+  };
+  return { image, sample };
+}
+
+// Where the real photo is mapped on the top face (uv radius of the cookie in the texture).
+const UV_R = 0.485;
+// Share of the photo's radius used by the flat top; the outer ring (real crust edge) wraps the rim.
+const TOP_SHARE = 0.92;
+// A plain-dough patch of the photo, used for the soft interior exposed by the bite.
+const DOUGH_UV: [number, number] = [0.43, 0.41];
+// Texture atlas (scripts/build-cookie-texture.py): 512×576 — top view in rows 0–511, real side-wall
+// strip in rows 512–575. Three's v axis runs bottom-up, so the strip occupies v ∈ [0, 64/576].
+const ATLAS_STRIP = 64 / 576;
+const topUV = (u: number, v: number): [number, number] => [u, ATLAS_STRIP + v * (1 - ATLAS_STRIP)];
+// Keep a texel of margin so filtering never bleeds across the two regions.
+const stripV = (t: number) => ATLAS_STRIP * (0.94 - 0.88 * t);
+const STRIP_REPEAT = 3; // the side strip wraps the cookie 3× (it is mirrored, so it tiles seamlessly)
 
 // ---------------------------------------------------------------------------------------------
 // Deterministic noise helpers
@@ -157,15 +208,45 @@ function topHeight(x: number, z: number, s: number): { y: number; crack: number 
   return { y: yTopProfile(s) + lumps + grain - crack * 0.055, crack };
 }
 
-async function buildCookie(segments: number, topRings: number, tick: Tick): Promise<{ geometry: BufferGeometry; surface: (x: number, z: number) => number }> {
+/** Welds shading across duplicated vertices (texture seams): coincident vertices share one normal. */
+function weldNormals(geometry: BufferGeometry): void {
+  const pos = geometry.getAttribute('position');
+  const nor = geometry.getAttribute('normal');
+  const groups = new Map<string, number[]>();
+  for (let i = 0; i < pos.count; i++) {
+    const key = `${pos.getX(i).toFixed(4)},${pos.getY(i).toFixed(4)},${pos.getZ(i).toFixed(4)}`;
+    const g = groups.get(key);
+    if (g) g.push(i);
+    else groups.set(key, [i]);
+  }
+  groups.forEach((ids) => {
+    if (ids.length < 2) return;
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    for (const i of ids) {
+      x += nor.getX(i);
+      y += nor.getY(i);
+      z += nor.getZ(i);
+    }
+    const l = Math.hypot(x, y, z) || 1;
+    for (const i of ids) nor.setXYZ(i, x / l, y / l, z / l);
+  });
+  nor.needsUpdate = true;
+}
+
+async function buildCookie(segments: number, topRings: number, tick: Tick, photo?: Photo): Promise<{ geometry: BufferGeometry; surface: (x: number, z: number) => number }> {
   // 2D profile from the top centre, over the rounded rim, to the bottom centre.
-  type P = { r: number; y: number; region: 0 | 1 | 2; s: number };
+  // `seam` marks a duplicated row (same positions as the previous row, different texture
+  // coordinates) so the top-view and side-strip regions of the atlas never blend.
+  type P = { r: number; y: number; region: 0 | 1 | 2; s: number; seam?: boolean };
   const profile: P[] = [];
   for (let i = 0; i <= topRings; i++) {
     const s = i / topRings;
     profile.push({ r: s * INNER, y: yTopProfile(s), region: 0, s });
   }
   const rimSteps = 14;
+  if (photo) profile.push({ r: INNER, y: yTopProfile(1), region: 1, s: 1, seam: true });
   for (let i = 1; i < rimSteps; i++) {
     const phi = Math.PI / 2 - (i / rimSteps) * Math.PI;
     profile.push({ r: INNER + RIM * Math.cos(phi), y: RIM_CY + RIM * Math.sin(phi), region: 1, s: 1 });
@@ -189,67 +270,108 @@ async function buildCookie(segments: number, topRings: number, tick: Tick): Prom
   const colors: number[] = [];
   const uvs: number[] = [];
   const M = segments;
+  const ROW = M + 1; // one extra column so the texture wraps without a seam
   for (let pi = 0; pi < profile.length; pi++) {
     await tick();
     const p = profile[pi];
-    for (let j = 0; j < M; j++) {
+    const rowStart = positions.length;
+    for (let j = 0; j <= M; j++) {
       const theta = (j / M) * Math.PI * 2;
       const c = Math.cos(theta);
       const sn = Math.sin(theta);
-      const wobble = edgeWobble(theta);
-      let r = p.r * wobble;
-      let y = p.y;
-      let crack = 0;
 
-      if (p.region === 0) {
-        const h = topHeight(c * r, sn * r, p.s);
-        y = h.y;
-        crack = h.crack;
-      } else if (p.region === 1) {
-        r += (fbm(theta * 5, y * 9 + 3, 3) - 0.5) * 0.04;
-        y += (fbm(theta * 7 + 9, 2, 2) - 0.5) * 0.02;
+      if (j === M || p.seam) {
+        // Duplicate vertex: copy the exact position (wrap column, or the row above for a seam).
+        const src = j === M ? rowStart : rowStart - ROW * 3 + j * 3;
+        positions.push(positions[src], positions[src + 1], positions[src + 2]);
       } else {
-        y += (fbm(c * 4 * r, sn * 4 * r, 2) - 0.5) * 0.008;
+        const wobble = edgeWobble(theta);
+        let r = p.r * wobble;
+        let y = p.y;
+        let crack = 0;
+        if (p.region === 0 && photo) {
+          // Real cookie: gentle dome + relief read from the photo (chocolate stands proud).
+          const ph = photo.sample(0.5 + c * p.s * TOP_SHARE * UV_R, 0.5 - sn * p.s * TOP_SHARE * UV_R);
+          y = yTopProfile(p.s) + (fbm(c * r * 1.3 + 11, sn * r * 1.3 - 4, 3) - 0.5) * 0.05 + ph.choc * 0.05 + (ph.lum - 0.5) * 0.02;
+        } else if (p.region === 0) {
+          const h = topHeight(c * r, sn * r, p.s);
+          y = h.y;
+          crack = h.crack;
+        } else if (p.region === 1) {
+          r += (fbm(c * 3 + 5, sn * 3 + y * 9 + 3, 3) - 0.5) * 0.04;
+          y += (fbm(c * 4 + 9, sn * 4 + 2, 2) - 0.5) * 0.02;
+        } else {
+          y += (fbm(c * 4 * r, sn * 4 * r, 2) - 0.5) * 0.008;
+        }
+        // The bite: everything beyond the bite boundary collapses onto it, forming a crumbly wall.
+        const limit = biteLimit(c, sn);
+        if (r > limit - 0.01) {
+          const crumble = (fbm(c * 9 + 2, sn * 9 + y * 26 + 4, 3) - 0.5) * 0.06;
+          r = Math.max(0.02, limit + crumble);
+          y += (fbm(c * 7 + sn * 5, y * 30, 2) - 0.5) * 0.03;
+        }
+        positions.push(c * r, y, sn * r);
+        if (!photo) {
+          // Procedural colouring (fallback): golden top, toasted spots, caramelised edge, cracks, soft bite.
+          const bitten = r < limit + 0.05 && r <= limit + 0.04 && p.r * wobble > limit - 0.01;
+          const x = c * r;
+          const z = sn * r;
+          if (bitten) tmp.copy(cInside).lerp(cInsideDark, fbm(x * 18, y * 18 + z * 6, 2));
+          else if (p.region === 0) {
+            tmp.copy(cTop).lerp(cToast, smoothstep(0.45, 0.8, fbm(x * 2.4 - 3, z * 2.4 + 1, 3)) * 0.8);
+            tmp.lerp(cEdge, smoothstep(0.7, 1, p.s) * 0.65);
+            tmp.lerp(cCrack, crack * 0.85);
+          } else if (p.region === 1) tmp.copy(cEdge).lerp(cToast, fbm(c * 4 + y * 10, sn * 4, 2) * 0.6);
+          else tmp.copy(cBottom);
+          colors.push(tmp.r, tmp.g, tmp.b);
+          uvs.push(x * 0.5 + 0.5, z * 0.5 + 0.5);
+          continue;
+        }
       }
 
-      // The bite: everything beyond the bite boundary collapses onto it, forming a crumbly wall.
-      const limit = biteLimit(c, sn);
-      let bitten = false;
-      if (r > limit - 0.01) {
-        bitten = true;
-        const crumble = (fbm(theta * 30 + 2, y * 26 + 4, 3) - 0.5) * 0.06;
-        r = Math.max(0.02, limit + crumble);
-        y += (fbm(theta * 22, y * 30, 2) - 0.5) * 0.03;
+      if (!photo) {
+        // Wrap column in procedural mode: copy colour + uv of column 0.
+        const ci = (rowStart / 3) * 3;
+        colors.push(colors[ci], colors[ci + 1], colors[ci + 2]);
+        const ui = (rowStart / 3) * 2;
+        uvs.push(uvs[ui], uvs[ui + 1]);
+        continue;
       }
 
-      const x = c * r;
-      const z = sn * r;
-      positions.push(x, y, z);
-      uvs.push(x * 0.5 + 0.5, z * 0.5 + 0.5);
-
-      // Colour: golden top, toasted spots, caramelised edge, lighter cracks, soft interior in the bite.
+      // ---- Photo atlas mapping
+      const vi = positions.length - 3;
+      const x = positions[vi];
+      const y = positions[vi + 1];
+      const z = positions[vi + 2];
+      const bitten = Math.hypot(x, z) < biteLimit(c, sn) + 0.035 && Number.isFinite(biteLimit(c, sn)) && p.r * edgeWobble(theta) > biteLimit(c, sn) - 0.01;
       if (bitten) {
-        tmp.copy(cInside).lerp(cInsideDark, fbm(x * 18, y * 18 + z * 6, 2));
+        // Soft interior exposed by the bite: a plain-dough patch of the photo.
+        const [du, dv] = topUV(DOUGH_UV[0] + (fbm(c * 9 + y * 5, sn * 9, 2) - 0.5) * 0.08, DOUGH_UV[1] + (fbm(y * 9 + 4, c * 7 + sn * 3, 2) - 0.5) * 0.08);
+        uvs.push(du, dv);
+        const k = 0.92 + fbm(x * 18, y * 18 + z * 6, 2) * 0.12;
+        colors.push(k, k * 0.98, k * 0.94);
       } else if (p.region === 0) {
-        tmp.copy(cTop).lerp(cToast, smoothstep(0.45, 0.8, fbm(x * 2.4 - 3, z * 2.4 + 1, 3)) * 0.8);
-        tmp.lerp(cEdge, smoothstep(0.7, 1, p.s) * 0.65);
-        tmp.lerp(cCrack, crack * 0.85);
-      } else if (p.region === 1) {
-        tmp.copy(cEdge).lerp(cToast, fbm(theta * 6, y * 10, 2) * 0.6);
+        const [u, v] = topUV(0.5 + c * p.s * TOP_SHARE * UV_R, 0.5 - sn * p.s * TOP_SHARE * UV_R);
+        uvs.push(u, v);
+        colors.push(1, 1, 1);
       } else {
-        tmp.copy(cBottom);
+        // Rim + underside: the real side-wall strip (u = angle, v = down the side).
+        const t = p.region === 1 ? Math.min(1, Math.max(0, (RIM_CY + RIM - y) / (2 * RIM))) : 1;
+        uvs.push((j / M) * STRIP_REPEAT, stripV(t));
+        const shade = p.region === 1 ? 1 - 0.22 * t : 0.7;
+        colors.push(shade, shade * 0.98, shade * 0.95);
       }
-      colors.push(tmp.r, tmp.g, tmp.b);
     }
   }
 
   const index: number[] = [];
   for (let i = 0; i < profile.length - 1; i++) {
+    if (profile[i + 1].seam) continue; // the seam row coincides with the row above: no triangles
     for (let j = 0; j < M; j++) {
-      const a = i * M + j;
-      const b = i * M + ((j + 1) % M);
-      const c = (i + 1) * M + j;
-      const d = (i + 1) * M + ((j + 1) % M);
+      const a = i * ROW + j;
+      const b = i * ROW + j + 1;
+      const c = (i + 1) * ROW + j;
+      const d = (i + 1) * ROW + j + 1;
       index.push(a, b, c, b, d, c);
     }
   }
@@ -262,7 +384,7 @@ async function buildCookie(segments: number, topRings: number, tick: Tick): Prom
   geometry.computeVertexNormals();
   // Make sure faces point outwards (top normals must point up).
   const normals = geometry.getAttribute('normal');
-  if (normals.getY(M * 2) < 0) {
+  if (normals.getY(ROW * 2 + 1) < 0) {
     for (let k = 0; k < index.length; k += 3) {
       const t = index[k + 1];
       index[k + 1] = index[k + 2];
@@ -271,11 +393,17 @@ async function buildCookie(segments: number, topRings: number, tick: Tick): Prom
     geometry.setIndex(index);
     geometry.computeVertexNormals();
   }
+  weldNormals(geometry);
   geometry.computeBoundingSphere();
 
   const surface = (x: number, z: number) => {
     const r = Math.hypot(x, z);
     const s = Math.min(1, r / INNER);
+    if (photo) {
+      const k = (TOP_SHARE * UV_R) / INNER;
+      const ph = photo.sample(0.5 + x * k, 0.5 - z * k);
+      return yTopProfile(s) + ph.choc * 0.05;
+    }
     return topHeight(x, z, s).y;
   };
   return { geometry, surface };
@@ -346,16 +474,27 @@ function radialTexture(inner: string, outer: string, size = 128): CanvasTexture 
 // ---------------------------------------------------------------------------------------------
 // Scene
 // ---------------------------------------------------------------------------------------------
-export async function mountHero({ hero, canvas, stage, quality }: HeroOptions): Promise<{ destroy: () => void }> {
+export async function mountHero({ hero, canvas, stage, quality, texture }: HeroOptions): Promise<{ destroy: () => void }> {
   const tick = makeTick();
   const high = quality === 'high';
   const rand = mulberry32(20261106);
+
+  // The real cookie photo (falls back to the procedural cookie if it can't be loaded).
+  let photo: Photo | undefined;
+  if (texture) {
+    try {
+      photo = await loadPhoto(texture);
+    } catch {
+      photo = undefined;
+    }
+  }
 
   const renderer = new WebGLRenderer({ canvas, antialias: high, alpha: true, powerPreference: high ? 'high-performance' : 'low-power' });
   let dpr = Math.min(window.devicePixelRatio || 1, high ? 1.75 : 1.35);
   renderer.setPixelRatio(dpr);
   renderer.outputColorSpace = SRGBColorSpace;
-  renderer.toneMapping = ACESFilmicToneMapping;
+  // A photographic texture should keep its true colours: no filmic curve when using the photo.
+  renderer.toneMapping = photo ? NoToneMapping : ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.08;
   renderer.setClearColor(0x000000, 0);
 
@@ -365,12 +504,13 @@ export async function mountHero({ hero, canvas, stage, quality }: HeroOptions): 
   camera.lookAt(0, 0, 0);
 
   // Lights: warm key, soft sky/ground fill, caramel rim. No shadow maps.
-  scene.add(new HemisphereLight(0xfff4e2, 0x6b4430, 1.15));
-  scene.add(new AmbientLight(0xffffff, 0.18));
-  const key = new DirectionalLight(0xffe3bd, 2.6);
+  // (The photo already contains studio lighting, so it gets a softer, flatter rig.)
+  scene.add(new HemisphereLight(0xfff4e2, 0x6b4430, photo ? 1.0 : 1.15));
+  scene.add(new AmbientLight(0xffffff, photo ? 0.55 : 0.18));
+  const key = new DirectionalLight(0xffe3bd, photo ? 1.35 : 2.6);
   key.position.set(-2.2, 3.2, 3.2);
   scene.add(key);
-  const rim = new DirectionalLight(0xffc77a, 1.7);
+  const rim = new DirectionalLight(0xffc77a, photo ? 0.9 : 1.7);
   rim.position.set(3, 1.5, -2.5);
   scene.add(rim);
 
@@ -382,9 +522,19 @@ export async function mountHero({ hero, canvas, stage, quality }: HeroOptions): 
   root.add(tilt);
   tilt.add(spin);
 
-  const { geometry: cookieGeo, surface } = await buildCookie(high ? 200 : 128, high ? 30 : 20, tick);
-  const bump = await bumpTexture(256, tick);
-  const cookieMat = new MeshStandardMaterial({ vertexColors: true, roughness: 0.82, metalness: 0, bumpMap: bump, bumpScale: 2.2 });
+  const { geometry: cookieGeo, surface } = await buildCookie(high ? 200 : 128, high ? 36 : 24, tick, photo);
+  let cookieMat: MeshStandardMaterial;
+  if (photo) {
+    const map = new Texture(photo.image);
+    map.colorSpace = SRGBColorSpace;
+    map.wrapS = RepeatWrapping; // the side strip tiles around the cookie
+    map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    map.needsUpdate = true;
+    cookieMat = new MeshStandardMaterial({ map, vertexColors: true, roughness: 0.78, metalness: 0, bumpMap: map, bumpScale: 1.4 });
+  } else {
+    const bump = await bumpTexture(256, tick);
+    cookieMat = new MeshStandardMaterial({ vertexColors: true, roughness: 0.82, metalness: 0, bumpMap: bump, bumpScale: 2.2 });
+  }
   const cookie = new Mesh(cookieGeo, cookieMat);
   spin.add(cookie);
   spin.rotation.y = -1.15; // start with the bite facing the viewer
@@ -398,7 +548,8 @@ export async function mountHero({ hero, canvas, stage, quality }: HeroOptions): 
   const onCookie: Array<[number, number, number, number]> = []; // x, y, z, scale
   const inBite = (x: number, z: number, pad: number) => BITES.some((b) => Math.hypot(x - b.x, z - b.z) < b.r + pad);
   let guard = 0;
-  while (onCookie.length < (high ? 17 : 13) && guard++ < 400) {
+  // The real photo already has its chocolate; procedural chunks only for the fallback cookie.
+  while (!photo && onCookie.length < (high ? 17 : 13) && guard++ < 400) {
     const r = Math.sqrt(rand()) * 0.8;
     const a = rand() * Math.PI * 2;
     const x = Math.cos(a) * r;
@@ -425,7 +576,7 @@ export async function mountHero({ hero, canvas, stage, quality }: HeroOptions): 
   spin.add(chunks);
 
   // Sea-salt flakes ("a touch of fleur de sel")
-  const saltCount = high ? 26 : 16;
+  const saltCount = photo ? 0 : high ? 26 : 16;
   const salt = new InstancedMesh(chunkGeometry(0, 0.4, 3), new MeshStandardMaterial({ color: 0xfffaf2, roughness: 0.25 }), saltCount);
   for (let i = 0; i < saltCount; i++) {
     const r = Math.sqrt(rand()) * 0.78;
@@ -461,9 +612,10 @@ export async function mountHero({ hero, canvas, stage, quality }: HeroOptions): 
         scale: minS + rand() * (maxS - minS),
       };
     });
-  const chocFloat = makeFloaters(floatCount, 1.45, 2.05, 0.07, 0.13, 0);
+  const chocFloat = makeFloaters(floatCount, 1.45, 2.05, 0.08, 0.12, 0);
   const crumbData = makeFloaters(high ? 34 : 20, 1.05, 1.8, 0.018, 0.045, 0.6);
-  const chocFloatMesh = new InstancedMesh(chunkGeo, chocMat, chocFloat.length);
+  const shardGeo = chunkGeometry(1, 0.3, 5); // faceted = freshly broken chocolate
+  const chocFloatMesh = new InstancedMesh(shardGeo, chocMat, chocFloat.length);
   const crumbMesh = new InstancedMesh(chunkGeometry(0, 0.7, 11), new MeshStandardMaterial({ color: 0xb8773a, roughness: 0.9 }), crumbData.length);
   floaters.add(chocFloatMesh, crumbMesh);
 
@@ -639,7 +791,9 @@ export async function mountHero({ hero, canvas, stage, quality }: HeroOptions): 
         if (fall) y = ((f.base[1] + 0.9 - elapsed * 0.05 * f.speed * fall + 50) % 1.8) - 0.9; // slow-falling crumbs
         dummy.position.set(f.base[0] * spread + current.x * 0.25 * f.speed, y - pe * 0.6, f.base[2]);
         dummy.rotation.set(f.rot[0] + tt * 0.4, f.rot[1] + tt * 0.3, f.rot[2]);
-        dummy.scale.setScalar(f.scale);
+        // Chocolate pieces are flat broken shards; crumbs stay chunky.
+        if (fall) dummy.scale.setScalar(f.scale);
+        else dummy.scale.set(f.scale * 1.25, f.scale * 0.42, f.scale);
         dummy.updateMatrix();
         mesh.setMatrixAt(i, dummy.matrix);
       });

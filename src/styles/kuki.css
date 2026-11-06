@@ -336,6 +336,7 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
 }
 .hero__fallback {
   position: absolute; inset: 6%; display: grid; place-items: center;
+  scale: 1.72; /* the photo has wide transparent margins: match the 3D cookie's size so the hand-over is seamless */
   transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
 }
 .hero__fallback img { width: 100%; height: auto; will-change: transform; } /* no filter: keeps the float compositor-only */

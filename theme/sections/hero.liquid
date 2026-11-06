@@ -33,7 +33,7 @@
       <div class="hero__fallback">
         {%- render 'kuki-picture', image: section.settings.fallback_image, name: 'c-cookie-1', alt: section.settings.fallback_alt, sizes: '(min-width: 900px) 600px, 84vw', priority: true -%}
       </div>
-      <canvas class="hero__canvas" data-hero-canvas aria-hidden="true" tabindex="-1"></canvas>
+      <canvas class="hero__canvas" data-hero-canvas data-texture="{{ 'cookie-atlas.webp' | asset_url }}" aria-hidden="true" tabindex="-1"></canvas>
     </div>
   </div>
   {%- render 'kuki-picture', name: 'i-mascot-wave', alt: '', class: 'hero__mascot', sizes: '130px' -%}

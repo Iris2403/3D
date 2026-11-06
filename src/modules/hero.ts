@@ -26,7 +26,7 @@ export function initHero(): void {
 
   const start = () => {
     import('./hero3d')
-      .then(({ mountHero }) => mountHero({ hero, canvas, stage, quality }))
+      .then(({ mountHero }) => mountHero({ hero, canvas, stage, quality, texture: canvas.dataset.texture }))
       .catch(() => hero.classList.remove('is-3d'));
   };
   // Load on the visitor's first sign of engagement (after the page has loaded), never during
