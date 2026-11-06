@@ -45,11 +45,7 @@
     "find_nearest": "Find my nearest Kuki",
     "directions": "Directions",
     "directions_to": "Directions to Kuki",
-    "map_title": "Schematic map of KUKI stores across Athens",
-    "sea": "Saronic Gulf",
-    "centre": "Syntagma",
-    "schematic": "Schematic map · positions approximate",
-    "load_map": "Show Google Map"
+    "map_frame_title": "Google Map showing Kuki"
   },
   "gallery": {
     "title": "Gallery",

@@ -73,7 +73,7 @@ npm run templates      # re-generate templates/*.json from scripts/gen-templates
 | Privacy policy | Admin → Settings → Policies | Linked from every form's consent/privacy notice (`/policies/privacy-policy`). |
 | Newsletter subscribers | Admin → Customers (tag `newsletter`) | Native Shopify email-marketing consent; connect Shopify Email or another tool to send. |
 | Page SEO titles/descriptions | Each page's *Search engine listing* | Optional: the theme has good defaults. |
-| Store coordinates | Theme editor → Locations → each store | The schematic map pins and "nearest store" sort use **approximate** coordinates. Replace them with exact ones from Google Maps if you want. Directions always use the exact address. |
+| Store coordinates | Theme editor → Locations → each store | The "nearest store" sort uses **approximate** coordinates; replace them with exact ones if you want. The live Google Map and directions always use the exact address. |
 | Reviews | Theme editor → Testimonials → add blocks | Add more genuine reviews, verbatim, with an optional link to the source. |
 | Images | Theme editor → any image block | Every image can be replaced with an upload; Shopify's CDN then serves responsive AVIF/WebP automatically. |
 
@@ -133,7 +133,7 @@ dialogs, the carousel buttons, filtering and so on.
   double-submit protection.
 - No `innerHTML` anywhere. Dynamic text uses `textContent`, all Liquid output of merchant text is
   `| escape`d, and JSON-LD goes through `| json`. An XSS payload test is part of the e2e suite.
-- No API keys or secrets. Google Maps is an embed that loads only on request, so no key is needed.
+- No API keys or secrets. The store map is Google's keyless embed (lazy-loaded), so no key is needed.
 - Every `target=_blank` link has `rel=noopener`.
 - Shopify already serves HSTS, `X-Frame-Options: DENY`, `nosniff` and a CSP with
   `frame-ancestors 'none'`. The theme adds `object-src 'none'; base-uri 'self'` and a strict

@@ -9,11 +9,13 @@ export function initPointerFx(): void {
 
   // Magnetic buttons
   $$('[data-magnetic]').forEach((el) => {
-    const strength = 0.28;
+    // Gentle pull, capped, so neighbouring buttons can never touch.
+    const strength = 0.16;
+    const max = 6;
     el.addEventListener('pointermove', (e) => {
       const r = el.getBoundingClientRect();
-      const x = (e.clientX - (r.left + r.width / 2)) * strength;
-      const y = (e.clientY - (r.top + r.height / 2)) * strength;
+      const x = Math.max(-max, Math.min(max, (e.clientX - (r.left + r.width / 2)) * strength));
+      const y = Math.max(-max, Math.min(max, (e.clientY - (r.top + r.height / 2)) * strength));
       el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
     });
     el.addEventListener('pointerleave', () => {

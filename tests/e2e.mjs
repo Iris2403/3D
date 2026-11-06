@@ -162,18 +162,20 @@ await test('gallery lightbox: opens, arrow keys navigate, Esc closes', async () 
   await page.context().close();
 });
 
-await test('locations: select store, lazy Google map, nearest store via geolocation', async () => {
+await test('locations: live Google map follows the selected store; nearest store via geolocation', async () => {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, geolocation: { latitude: 37.87, longitude: 23.755 }, permissions: ['geolocation'] });
   const page = await ctx.newPage();
   await page.goto(BASE + '/');
-  assert((await page.$$('iframe')).length === 0, 'map iframe loaded before consent');
+  const mapQuery = async () => decodeURIComponent((await page.getAttribute('[data-map-frame]', 'src')).replace(/\+/g, ' '));
+  const first = await mapQuery();
+  assert(first.startsWith('https://www.google.com/maps?q=') && first.includes('Κωλέττη 11'), 'map not shown from the start: ' + first);
   await page.click('[data-store][data-index="3"] [data-store-select]');
   assert((await page.getAttribute('[data-store][data-index="3"] [data-store-select]', 'aria-pressed')) === 'true', 'store not selected');
-  await page.click('[data-map-load]');
-  const src = await page.getAttribute('[data-map-embed] iframe', 'src');
-  assert(src.startsWith('https://www.google.com/maps?q=') && src.includes(encodeURIComponent('Βούλγαρη 134')), `bad map src ${src}`);
+  const src = await mapQuery();
+  assert(src.includes('Βούλγαρη 134'), 'map did not follow selection: ' + src);
   await page.click('[data-locate]');
   await page.waitForFunction(() => /Glyfada/.test(document.querySelector('[data-locate-status]').textContent));
+  assert((await mapQuery()).includes('Μαραγκού 8'), 'map did not move to nearest store');
   const dir = await page.getAttribute('[data-store][data-index="6"] a', 'href');
   assert(dir.startsWith('https://www.google.com/maps/dir/?api=1&destination='), 'directions link wrong');
   await ctx.close();

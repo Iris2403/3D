@@ -209,7 +209,7 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
 .btn--ghost:hover { border-color: var(--butter); }
 .btn--light { --btn-bg: var(--butter-50); --btn-fg: var(--ink); --btn-hover: var(--butter); }
 .btn--sm { min-height: 44px; padding: 0.6em 1.15em; font-size: 0.78rem; }
-.btn-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 1rem 1.25rem; }
 
 .link-arrow {
   display: inline-flex; align-items: center; gap: 0.5em;
@@ -400,7 +400,9 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
   html.js [data-reveal='fade'] { transform: none; }
   html.js [data-reveal='scale'] { transform: scale(0.94); }
   html.js [data-reveal].is-in { opacity: 1; transform: none; }
-  html.js [data-split] .w { display: inline-block; overflow: clip; vertical-align: top; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  /* Each word clips its own rise-in, with room on every side so italic overhangs (s, ?, f, y) and
+     descenders are never cut; the negative margins keep normal word spacing. */
+  html.js [data-split] .w { display: inline-block; overflow: clip; vertical-align: top; padding: 0.04em 0.16em 0.14em 0.06em; margin: -0.04em -0.16em -0.14em -0.06em; }
   html.js [data-split] .w > span { display: inline-block; transform: translateY(105%); transition: transform 1s var(--ease-out); transition-delay: calc(var(--i, 0) * 55ms); }
   html.js [data-split].is-in .w > span { transform: none; }
   html.js [data-clip] { clip-path: inset(12% 12% 12% 12% round var(--r-lg)); transition: clip-path 1.3s var(--ease-out); }
@@ -614,20 +616,10 @@ dialog.sheet::backdrop { background: rgb(26 16 10 / 0.62); }
   .store__num { grid-row: span 1; }
   .store__dir { grid-row: auto; grid-column: 2; justify-self: start; }
 }
-.map-panel { position: relative; border-radius: var(--r-lg); overflow: hidden; background: var(--sage-soft); min-height: 380px; display: grid; }
-.map-panel svg.map-art { width: 100%; height: 100%; }
-.map-pin { cursor: pointer; }
-.map-pin circle.pin-dot { fill: var(--ink); transition: r 0.3s var(--ease-spring), fill 0.3s; }
-.map-pin text { font: 800 15px var(--f-body); fill: var(--butter-50); pointer-events: none; }
-.map-pin.is-active circle.pin-dot { fill: var(--accent); }
-.map-pin .pin-label { font: 700 15px var(--f-body); fill: var(--ink); opacity: 0; transition: opacity 0.3s; }
-.map-pin.is-active .pin-label, .map-pin:hover .pin-label { opacity: 1; }
-.map-pin:focus-visible { outline: none; }
-.map-pin:focus-visible circle.pin-ring { stroke: var(--focus); stroke-width: 4; }
-.map-embed { position: absolute; inset: 0; }
-.map-embed iframe { width: 100%; height: 100%; border: 0; }
-.map-panel__ui { position: absolute; left: 1rem; right: 1rem; bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: space-between; align-items: end; z-index: 2; }
-.map-panel__note { font-size: 0.75rem; color: var(--fg-muted); background: rgb(255 250 234 / 0.9); padding: 0.3rem 0.6rem; border-radius: var(--r-pill); }
+.map-panel { position: relative; border-radius: var(--r-lg); overflow: hidden; background: var(--sage-soft); min-height: 420px; display: grid; }
+.map-panel iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.map-panel__label { position: absolute; left: 1rem; top: 1rem; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.9rem; border-radius: var(--r-pill); background: var(--butter-50); box-shadow: var(--shadow-soft); font-weight: 800; font-size: 0.9rem; pointer-events: none; }
+.map-panel__label svg { width: 1.1em; height: 1.1em; color: var(--accent); }
 .locate-status { min-height: 1.5em; font-size: 0.92rem; color: var(--fg-muted); }
 @media (min-width: 960px) {
   .locations__grid { grid-template-columns: 0.95fr 1.05fr; align-items: stretch; }

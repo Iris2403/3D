@@ -1,54 +1,36 @@
 import { $, $$, t } from './env';
 
 /**
- * Store finder: select a store (list or map pin), load Google Maps only on request,
- * and sort by distance using the browser's geolocation — the position never leaves the device.
+ * Store finder: a live Google Map that follows the selected store, and a nearest-store sort using
+ * the browser's geolocation — the position never leaves the device.
  */
 export function initLocations(): void {
   const root = $('[data-locations]');
   if (!root) return;
   const list = $('[data-store-list]', root);
   const stores = $$('[data-store]', root);
-  const pins = $$<SVGGElement>('[data-pin]', root);
-  const embed = $('[data-map-embed]', root);
-  const loadBtn = $<HTMLButtonElement>('[data-map-load]', root);
+  const frame = $<HTMLIFrameElement>('[data-map-frame]', root);
+  const label = $('[data-map-label]', root);
   const locateBtn = $<HTMLButtonElement>('[data-locate]', root);
   const status = $('[data-locate-status]', root);
   if (!list || !stores.length) return;
 
-  let active = 0;
-  let mapLoaded = false;
-
   const embedUrl = (query: string) => `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
 
+  // Selecting a store highlights it and moves the live Google Map to it.
   const select = (index: number) => {
-    active = index;
     stores.forEach((s) => {
       const on = Number(s.dataset.index) === index;
       s.classList.toggle('is-active', on);
       s.querySelector('[data-store-select]')?.setAttribute('aria-pressed', String(on));
     });
-    pins.forEach((p) => p.classList.toggle('is-active', Number(p.dataset.pin) === index));
-    if (mapLoaded) showMap();
-  };
-
-  const showMap = () => {
-    if (!embed) return;
-    const store = stores.find((s) => Number(s.dataset.index) === active);
-    if (!store) return;
-    let frame = embed.querySelector('iframe');
-    if (!frame) {
-      frame = document.createElement('iframe');
-      frame.loading = 'lazy';
-      frame.referrerPolicy = 'no-referrer-when-downgrade';
-      frame.setAttribute('allowfullscreen', '');
-      embed.appendChild(frame);
-    }
-    frame.title = t('map_frame', { name: store.dataset.name || '' });
-    frame.src = embedUrl(store.dataset.query || '');
-    embed.hidden = false;
-    mapLoaded = true;
-    if (loadBtn) loadBtn.hidden = true;
+    const store = stores.find((s) => Number(s.dataset.index) === index);
+    if (!store || !frame) return;
+    const name = store.dataset.name || '';
+    const src = embedUrl(store.dataset.query || '');
+    if (frame.src !== src) frame.src = src;
+    frame.title = t('map_frame', { name });
+    if (label) label.textContent = `Kuki ${name}`;
   };
 
   list.addEventListener('click', (e) => {
@@ -56,14 +38,6 @@ export function initLocations(): void {
     const store = btn?.closest<HTMLElement>('[data-store]');
     if (store) select(Number(store.dataset.index));
   });
-  pins.forEach((p) =>
-    p.addEventListener('click', () => {
-      const i = Number(p.dataset.pin);
-      select(i);
-      stores[i]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    }),
-  );
-  loadBtn?.addEventListener('click', showMap);
 
   // ---- Nearest store
   const toRad = (d: number) => (d * Math.PI) / 180;
