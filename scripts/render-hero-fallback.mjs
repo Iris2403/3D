@@ -1,5 +1,6 @@
-// Renders the 3D cookie's first frame to source-assets/hero-cookie-render.png (transparent), so the
-// static hero image shown before / instead of WebGL is pixel-identical to the 3D cookie.
+// Renders two stills of the 3D hero (transparent PNGs), so the static images are pixel-identical to it:
+//  - source-assets/hero-cookie-render.png   the closed box = the 3D's first frame (shown until it loads)
+//  - source-assets/hero-box-open-render.png the open box with the cookie risen (no-3D / reduced motion)
 // Needs the preview running (npm run preview). Then run: npm run assets
 //   node scripts/render-hero-fallback.mjs
 import { chromium } from 'playwright-core';
@@ -14,22 +15,25 @@ try {
 } catch {
   executablePath = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
 }
-const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'source-assets', 'hero-cookie-render.png');
+const SRC = join(dirname(fileURLToPath(import.meta.url)), '..', 'source-assets');
 
 const browser = await chromium.launch({ executablePath, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
-await page.goto(process.env.BASE_URL || 'http://localhost:4173/', { waitUntil: 'networkidle' });
-// Isolate the canvas on a transparent page.
-await page.addStyleTag({
-  content: `html, body, .hero { background: transparent !important; }
-    body > :not(main), .hero__copy, .hero__fallback, .hero__mascot, .hero__scroll, .hero__shadow,
-    main > :not(:first-child) { visibility: hidden !important; }
-    .hero__canvas { -webkit-mask-image: none !important; mask-image: none !important; transition: none !important; }`,
-});
-await page.keyboard.press('Shift'); // first interaction → loads the 3D (no pointer tilt)
-await page.waitForSelector('.hero.is-3d', { timeout: 60000 });
-await page.waitForTimeout(80); // the very first frame (no fade: transition disabled above)
-const canvas = page.locator('[data-hero-canvas]');
-await canvas.screenshot({ path: out, omitBackground: true });
+for (const [file, at] of [['hero-cookie-render.png', 0], ['hero-box-open-render.png', 30]]) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
+  await page.goto(process.env.BASE_URL || 'http://localhost:4173/', { waitUntil: 'networkidle' });
+  // Isolate the canvas on a transparent page.
+  await page.addStyleTag({
+    content: `html, body, .hero { background: transparent !important; }
+      body > :not(main), .hero__copy, .hero__fallback, .hero__mascot, .hero__scroll, .hero__shadow,
+      main > :not(:first-child) { visibility: hidden !important; }
+      .hero__canvas { -webkit-mask-image: none !important; mask-image: none !important; transition: none !important; }`,
+  });
+  await page.evaluate((t) => (document.querySelector('[data-hero]').dataset.introAt = String(t)), at);
+  await page.keyboard.press('Shift'); // first interaction → loads the 3D (no pointer tilt)
+  await page.waitForSelector('.hero.is-3d', { timeout: 60000 });
+  await page.waitForTimeout(80); // the very first frame (no fade: transition disabled above)
+  await page.locator('[data-hero-canvas]').screenshot({ path: join(SRC, file), omitBackground: true });
+  await page.close();
+  console.log('wrote', file);
+}
 await browser.close();
-console.log('wrote', out);

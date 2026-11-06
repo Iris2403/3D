@@ -253,6 +253,9 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
   text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem;
 }
 .wordmark__dot { width: 0.32em; height: 0.32em; border-radius: 50%; background: var(--butter); transform: translateY(0.3em); }
+.wordmark__mascot { width: 1.25em; height: 1.25em; flex: none; border-radius: 50%; transform: rotate(-8deg); transition: transform .5s cubic-bezier(.34,1.56,.64,1); }
+.wordmark:hover .wordmark__mascot, .wordmark:focus-visible .wordmark__mascot { transform: rotate(10deg) scale(1.08); }
+@media (prefers-reduced-motion: reduce) { .wordmark__mascot { transition: none; } }
 .primary-nav { display: none; }
 .primary-nav ul { display: flex; gap: clamp(0.25rem, 1vw, 1rem); }
 .primary-nav a {
@@ -340,6 +343,15 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
   -webkit-mask-image: linear-gradient(#000 74%, transparent 96%); mask-image: linear-gradient(#000 74%, transparent 96%);
   transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
 }
+.hero__fallback > picture { grid-area: 1 / 1; width: 100%; height: 100%; }
+/* Closed box until the 3D opens it; the open box where the 3D never runs (reduced motion, no WebGL, Save-Data…). */
+.hero__fallback-open { display: none; }
+html:not(.js) .hero__fallback-closed, .hero--static .hero__fallback-closed { display: none; }
+html:not(.js) .hero__fallback-open, .hero--static .hero__fallback-open { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  .hero__fallback-closed { display: none; }
+  .hero__fallback-open { display: block; }
+}
 .hero__fallback img { width: 100%; height: 100%; object-fit: contain; will-change: transform; } /* no filter: keeps the float compositor-only */
 @media (prefers-reduced-motion: no-preference) {
   html.js .hero__fallback img { animation: float 7s ease-in-out infinite; }
@@ -352,6 +364,8 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
 .hero__shadow { transition: opacity 0.8s; }
 .hero.is-3d .hero__canvas { opacity: 1; }
 .hero.is-3d .hero__fallback { opacity: 0; }
+.hero__mascot { transition: opacity .6s; }
+.hero.is-3d .hero__mascot { opacity: 0; }
 .hero__shadow {
   position: absolute; left: 18%; right: 18%; bottom: 4%; height: 9%; border-radius: 50%;
   background: radial-gradient(closest-side, rgb(74 42 26 / 0.35), transparent);

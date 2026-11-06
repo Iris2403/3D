@@ -4,7 +4,7 @@
 <header class="site-header" data-header>
   <div class="container site-header__inner">
     <a href="{{ routes.root_url }}" class="wordmark" aria-label="{{ shop.name | escape }} – {{ 'general.home' | t }}">
-      Kuki<span class="wordmark__dot" aria-hidden="true"></span>
+      Kuki<img class="wordmark__mascot" src="{{ 'kuki-mascot-64.webp' | asset_url }}" srcset="{{ 'kuki-mascot-64.webp' | asset_url }} 64w, {{ 'kuki-mascot-128.webp' | asset_url }} 128w" sizes="40px" width="64" height="64" alt="" fetchpriority="low" decoding="async">
     </a>
 
     <nav class="primary-nav" aria-label="{{ 'general.main_nav' | t }}">
@@ -34,7 +34,7 @@
 <dialog class="mobile-menu on-dark" id="mobile-menu" aria-label="{{ 'general.main_nav' | t }}">
   <div class="mobile-menu__inner">
     <div class="mobile-menu__top">
-      <a href="{{ routes.root_url }}" class="wordmark">Kuki<span class="wordmark__dot" aria-hidden="true"></span></a>
+      <a href="{{ routes.root_url }}" class="wordmark">Kuki<img class="wordmark__mascot" src="{{ 'kuki-mascot-64.webp' | asset_url }}" srcset="{{ 'kuki-mascot-64.webp' | asset_url }} 64w, {{ 'kuki-mascot-128.webp' | asset_url }} 128w" sizes="40px" width="64" height="64" alt="" fetchpriority="low" decoding="async"></a>
       <button type="button" class="icon-btn" data-dialog-close aria-label="{{ 'general.close_menu' | t }}">{% render 'kuki-icon', name: 'close' %}</button>
     </div>
     <nav aria-label="{{ 'general.main_nav' | t }}">

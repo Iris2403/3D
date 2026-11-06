@@ -1,7 +1,7 @@
 # KUKI Flagship — Shopify theme
 
 A full redesign of [kukiworld.com](https://kukiworld.com/) as a Shopify Online Store 2.0 theme, featuring
-an interactive 3D hero built from a real KUKI cookie. Brand palette: **sage, chocolate brown and butter yellow**
+an interactive 3D hero: the sage KUKI box opens and a real Classic Kuki rises out of it. Brand palette: **sage, chocolate brown and butter yellow**
 (tokens at the top of `src/styles/kuki.css`).
 
 The existing site already runs on Shopify, with a custom Framer-exported theme. The redesign **keeps
@@ -20,7 +20,7 @@ theme/            ← the Shopify theme (this is what gets uploaded)
 src/              ← TypeScript + CSS sources (built into theme/assets)
   main.ts         core bundle (6 KB gzip): header, dialogs, reveals, carousel, menu filter,
                   process track, store finder, lightbox, forms, videos, hero loader
-  modules/hero3d.ts   lazy chunk: the WebGL cookie (three.js)
+  modules/hero3d.ts   lazy chunk: the WebGL box + cookie (three.js)
   styles/kuki.css     design system
 scripts/          build-assets.mjs (images/fonts/videos), gen-templates.py (verified content)
 preview/          local Liquid renderer used for QA (not deployed)
@@ -107,14 +107,18 @@ npm run templates      # re-generate templates/*.json from scripts/gen-templates
   (meshopt-compressed geometry, WebP textures). The underside, never visible in the photo, is
   synthesised from the side crust. To use a different model (e.g. a photogrammetry scan), upload it
   in Settings → Files and paste its URL in the hero section's "3D model URL" setting.
-- **Floating chocolate chips, small chunks and salt flakes** drift around the cookie and spread out
-  as you scroll away.
-- The static hero image is the 3D cookie's own first frame (`scripts/render-hero-fallback.mjs`), so
-  the hand-over from image to 3D is seamless. After changing the 3D, re-run that script and then
-  `npm run assets`.
+- **The box:** KUKI's sage packaging, built in code (no extra download). It has "Kuki" on the lid and,
+  inside the lid, the four-step print from the real box ("Step 1 … Step 4: Smile & Repeat"), drawn with
+  the brand's own mascot illustrations. On load the closed box gives a little hop, the lid swings open
+  and the cookie rises out and turns towards you, with a few sea-salt flakes. Scrolling away lowers
+  the cookie back towards the box. Drag or swipe sideways to spin the cookie.
+- **Static images** are rendered from the 3D scene itself (`scripts/render-hero-fallback.mjs`).
+  The closed box is shown until the 3D loads, so the opening plays from exactly that picture. The
+  open box with the risen cookie is shown wherever the 3D never runs (reduced motion, no WebGL,
+  Save-Data, no JavaScript, or *3D cookie → Off*). After changing the scene, re-run that script,
+  delete `theme/assets/c-hero-*`, then run `npm run assets`.
 - It loads only after the page has loaded **and** the visitor first interacts (move, scroll, touch,
-  key). Until then the real cookie photo floats with a compositor-only CSS animation, so nothing ever
-  looks missing.
+  key). Until then the closed-box image floats with a compositor-only CSS animation.
 - Initialisation is cooperative: it yields every ~8 ms and compiles shaders with `compileAsync`, so
   there are no long tasks. Rendering happens only while the hero is on screen and the tab is visible.
   After 6 s without input the cookie eases to rest and **stops rendering**; any input wakes it.

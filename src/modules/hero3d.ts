@@ -1,6 +1,7 @@
 /**
- * KUKI hero — the real Classic Kuki as a 3D model (theme/assets/kuki-cookie.glb), with floating
- * chocolate chips, chunks and sea-salt flakes around it.
+ * KUKI hero — the KUKI box opens and the real Classic Kuki (theme/assets/kuki-cookie.glb) rises
+ * out of it. The box is the brand's sage packaging: "KUKI" on the lid, the four-step mascot
+ * print ("Step 1 … Step 4: Smile & Repeat") inside it. A few sea-salt flakes drift off the cookie.
  *
  * The model is reconstructed from the KUKI product render (scripts/build-cookie-maps.py +
  * scripts/build-cookie-glb.mjs): real colour, real side wall, relief for the melted chocolate /
@@ -15,16 +16,15 @@
  *  - adaptive pixel ratio, 30 fps + no shadow maps on lower-powered devices, photo fallback if slow
  */
 import {
+  Box3,
   BoxGeometry,
   BufferGeometry,
   CanvasTexture,
-  Color,
   DirectionalLight,
   Group,
   HemisphereLight,
   IcosahedronGeometry,
   InstancedMesh,
-  LatheGeometry,
   Material,
   Mesh,
   MeshBasicMaterial,
@@ -36,11 +36,10 @@ import {
   PerspectiveCamera,
   PlaneGeometry,
   PMREMGenerator,
+  RepeatWrapping,
   Scene,
   SRGBColorSpace,
   Texture,
-  Vector2,
-  Vector3,
   WebGLRenderer,
 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -54,6 +53,8 @@ export interface HeroOptions {
   quality: 'high' | 'low';
   /** URL of the cookie model (.glb). */
   model?: string;
+  /** Mascot illustrations printed inside the lid (steps 1–3). */
+  art?: string[];
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -74,25 +75,6 @@ function h3(x: number, y: number, z: number): number {
   const s = Math.sin(x * 127.1 + y * 311.7 + z * 74.7 + 0.123) * 43758.5453123;
   return s - Math.floor(s);
 }
-function vn(x: number, y: number, z: number): number {
-  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
-  const xf = x - xi, yf = y - yi, zf = z - zi;
-  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
-  const l = (a: number, b: number, t: number) => a + (b - a) * t;
-  const a = l(l(h3(xi, yi, zi), h3(xi + 1, yi, zi), u), l(h3(xi, yi + 1, zi), h3(xi + 1, yi + 1, zi), u), v);
-  const b = l(l(h3(xi, yi, zi + 1), h3(xi + 1, yi, zi + 1), u), l(h3(xi, yi + 1, zi + 1), h3(xi + 1, yi + 1, zi + 1), u), v);
-  return l(a, b, w);
-}
-function fbm(x: number, y: number, z: number, o = 4): number {
-  let a = 0.5, s = 0, f = 1;
-  for (let i = 0; i < o; i++) {
-    s += a * (vn(x * f, y * f, z * f) * 2 - 1);
-    f *= 2.03;
-    a *= 0.5;
-  }
-  return s;
-}
-
 /** Cooperative scheduling: `await tick()` yields to the main thread once ~8 ms have passed. */
 type Tick = () => Promise<void>;
 function makeTick(budgetMs = 8): Tick {
@@ -105,42 +87,7 @@ function makeTick(budgetMs = 8): Tick {
   };
 }
 
-// Floating pieces: lathe-turned chocolate disc, bevelled broken chunk, flat salt crystal.
-function discChipGeo(r: number, h: number, seed: number): BufferGeometry {
-  const pts = [[0, 0], [r * 0.9, 0], [r, h * 0.2], [r, h * 0.7], [r * 0.9, h * 0.96], [r * 0.45, h * 1.04], [0, h * 1.06]].map((p) => new Vector2(p[0], p[1]));
-  const g = new LatheGeometry(pts, 24);
-  const p = g.attributes.position;
-  for (let i = 0; i < p.count; i++) {
-    const x = p.getX(i), y = p.getY(i), z = p.getZ(i), a = Math.atan2(z, x);
-    const k = 1 + 0.09 * fbm(Math.cos(a) * 1.7 + seed, Math.sin(a) * 1.7, seed, 2) + 0.035 * Math.sin(a * 3 + seed * 2);
-    p.setXYZ(i, x * k, y * (1 + 0.08 * fbm(x * 9 + seed, z * 9, 3, 2)), z * k);
-  }
-  g.computeVertexNormals();
-  return g;
-}
-function chunkGeo(w: number, t: number, d: number, seed: number): BufferGeometry {
-  const g = new BoxGeometry(w, t, d, 10, 3, 10);
-  const p = g.attributes.position, n = g.attributes.normal;
-  const hx = w / 2, hy = t / 2, hz = d / 2, rr = Math.min(0.016, t * 0.3);
-  const v = new Vector3(), inn = new Vector3(), nn = new Vector3();
-  for (let i = 0; i < p.count; i++) {
-    v.fromBufferAttribute(p, i);
-    inn.set(clamp(v.x, -hx + rr, hx - rr), clamp(v.y, -hy + rr, hy - rr), clamp(v.z, -hz + rr, hz - rr));
-    nn.subVectors(v, inn);
-    if (nn.lengthSq() > 1e-10) {
-      nn.normalize();
-      v.copy(inn).addScaledVector(nn, rr);
-      n.setXYZ(i, nn.x, nn.y, nn.z);
-    }
-    const tx = (v.x / hx + 1) / 2;
-    v.z *= 1 - 0.2 * tx;
-    v.x += v.z * 0.22;
-    v.y += 0.005 * fbm(v.x * 14 + seed, v.z * 14, seed, 2);
-    p.setXYZ(i, v.x, v.y + hy, v.z);
-  }
-  g.computeBoundingSphere();
-  return g;
-}
+// Floating salt crystal.
 function saltGeo(): BufferGeometry {
   const g = new IcosahedronGeometry(1, 0); // already non-indexed → faceted crystal
   const p = g.attributes.position;
@@ -157,7 +104,7 @@ function saltGeo(): BufferGeometry {
 // ---------------------------------------------------------------------------------------------
 // Scene
 // ---------------------------------------------------------------------------------------------
-export async function mountHero({ hero, canvas, stage, quality, model }: HeroOptions): Promise<{ destroy: () => void }> {
+export async function mountHero({ hero, canvas, stage, quality, model, art = [] }: HeroOptions): Promise<{ destroy: () => void }> {
   if (!model) throw new Error('no model');
   const tick = makeTick();
   const high = quality === 'high';
@@ -190,21 +137,25 @@ export async function mountHero({ hero, canvas, stage, quality, model }: HeroOpt
   camera.position.set(0, 0.1, 6.4);
   camera.lookAt(0, 0, 0);
 
-  // root (scroll + float) → tilt (pointer; shows the top like a 34° camera) → spin.
+  // root (scroll) → tilt (camera elevation + pointer) → stageG (3/4 view of the box)
+  //   ├─ boxG: base + lid on its hinge
+  //   └─ cookieG (rises out of the box) → spin → cookie
   const root = new Group();
   const tilt = new Group();
-  const spin = new Group();
+  const stageG = new Group();
   scene.add(root);
   root.add(tilt);
-  tilt.add(spin);
+  tilt.add(stageG);
+  const YAW = -0.52;
+  stageG.rotation.y = YAW;
 
   const key = new DirectionalLight(0xfff1df, 0.62);
   key.position.set(-2.4, 4.2, 2.6);
   key.castShadow = high;
   key.shadow.mapSize.set(1024, 1024);
-  Object.assign(key.shadow.camera, { left: -1.4, right: 1.4, top: 1.4, bottom: -1.4, near: 0.5, far: 12 });
+  Object.assign(key.shadow.camera, { left: -2.6, right: 2.6, top: 2.6, bottom: -2.6, near: 0.5, far: 14 });
   key.shadow.bias = -0.0004;
-  key.shadow.normalBias = 0.01;
+  key.shadow.normalBias = 0.012;
   key.shadow.radius = 5;
   tilt.add(key, key.target);
   const rim = new DirectionalLight(0xffe2c4, 0.35);
@@ -212,6 +163,165 @@ export async function mountHero({ hero, canvas, stage, quality, model }: HeroOpt
   tilt.add(rim);
   // Total irradiance on the top ≈ 1: the photo's own colours come through as photographed.
   scene.add(new HemisphereLight(0xfff6ea, 0x8a6a4a, 0.27));
+
+  // ------------------------------------------------------------------- the KUKI box
+  // Sage mailer box (cookie radius = 1): base with double-thick walls, a lid hinged at the back with
+  // a tuck flap at the front. Outside: "KUKI". Inside the lid: the four-step mascot print.
+  const BW = 2.56, BD = 2.56, BH = 0.6, BT = 0.045;
+  const BOX_Y = -0.95;
+  const SAGE = '#a3b091', INK = '#2b3422';
+  const aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  const canvasTex = (w: number, h: number, draw: (g: CanvasRenderingContext2D) => void, repeat = 1) => {
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    draw(c.getContext('2d')!);
+    const t = new CanvasTexture(c);
+    t.colorSpace = SRGBColorSpace;
+    t.anisotropy = aniso;
+    if (repeat !== 1) {
+      t.wrapS = t.wrapT = RepeatWrapping;
+      t.repeat.set(repeat, repeat);
+    }
+    return t;
+  };
+  // Uncoated board: fine speckle + faint fibres, so flat faces don't read as plastic.
+  const paper = (g: CanvasRenderingContext2D, w: number, h: number, base = SAGE) => {
+    g.fillStyle = base;
+    g.fillRect(0, 0, w, h);
+    const img = g.getImageData(0, 0, w, h);
+    const prng = mulberry32(5);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const n = (prng() - 0.5) * 14;
+      img.data[i] += n;
+      img.data[i + 1] += n;
+      img.data[i + 2] += n;
+    }
+    g.putImageData(img, 0, 0);
+    g.globalAlpha = 0.05;
+    g.strokeStyle = '#ffffff';
+    for (let i = 0; i < (w * h) / 900; i++) {
+      const x = prng() * w, y = prng() * h, a = prng() * Math.PI;
+      g.beginPath();
+      g.moveTo(x, y);
+      g.lineTo(x + Math.cos(a) * 6, y + Math.sin(a) * 6);
+      g.stroke();
+    }
+    g.globalAlpha = 1;
+  };
+  const boardTex = canvasTex(256, 256, (g) => paper(g, 256, 256), 3);
+  const boardMat = new MeshStandardMaterial({ map: boardTex, roughness: 0.93, metalness: 0, envMapIntensity: 0.35 });
+  const boardInnerMat = new MeshStandardMaterial({ map: boardTex, color: 0xcdd3c0, roughness: 0.95, metalness: 0, envMapIntensity: 0.3 });
+
+  // Load the mascot illustrations (best effort: the print works without them).
+  const loadImg = (src: string) =>
+    new Promise<HTMLImageElement | null>((res) => {
+      const im = new Image();
+      im.crossOrigin = 'anonymous';
+      im.decoding = 'async';
+      im.onload = () => res(im);
+      im.onerror = () => res(null);
+      im.src = src;
+    });
+  const [mascots] = await Promise.all([Promise.all(art.slice(0, 3).map(loadImg)), document.fonts?.ready]);
+  await tick();
+  const bodyFont = (w: number, px: number) => `${w} ${px}px Manrope, "Manrope Fallback", Arial, sans-serif`;
+  const displayFont = (px: number) => `700 ${px}px "Fraunces Soft", "Fraunces Fallback", Georgia, serif`;
+
+  // Inside of the lid — as printed on the real box.
+  const printTex = canvasTex(1024, 1024, (g) => {
+    paper(g, 1024, 1024);
+    g.fillStyle = INK;
+    g.strokeStyle = INK;
+    g.textAlign = 'center';
+    g.textBaseline = 'alphabetic';
+    const steps = [
+      ['Step 1', 'Pick one (or two!)', 'cookies up,', "we won't judge"],
+      ['Step 2', 'Dip it!', '(Milk is the best,', 'but you do you)'],
+      ['Step 3', 'Take a big bite', '(no crumbs', 'left behind)'],
+    ];
+    const colW = 1024 / 3;
+    steps.forEach((s, i) => {
+      const cx = colW * i + colW / 2;
+      g.font = bodyFont(800, 50);
+      g.fillText(s[0], cx, 150);
+      g.font = bodyFont(600, 27);
+      s.slice(1).forEach((line, k) => g.fillText(line, cx, 200 + k * 34));
+      const im = mascots[i];
+      if (im) {
+        const h = 400, w = (im.naturalWidth / im.naturalHeight) * h;
+        g.drawImage(im, cx - w / 2, 315, w, h);
+      }
+    });
+    // dashed column rules
+    g.lineWidth = 3;
+    g.setLineDash([14, 12]);
+    [1, 2].forEach((i) => {
+      g.beginPath();
+      g.moveTo(colW * i, 90);
+      g.lineTo(colW * i, 760);
+      g.stroke();
+    });
+    g.setLineDash([]);
+    g.font = bodyFont(800, 58);
+    g.fillText('Step 4: Smile & Repeat', 512, 880);
+  });
+  // Outside of the lid: the KUKI wordmark, printed a few shades deeper than the board.
+  const lidTopTex = canvasTex(1024, 1024, (g) => {
+    paper(g, 1024, 1024);
+    g.fillStyle = 'rgba(43,52,34,.5)';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = displayFont(250);
+    g.fillText('Kuki', 512, 520);
+    g.font = bodyFont(800, 34);
+    g.fillText('HANDMADE COOKIES · ATHENS', 512, 700);
+  });
+  const lidOuterMat = new MeshStandardMaterial({ map: lidTopTex, roughness: 0.9, metalness: 0, envMapIntensity: 0.35 });
+  const lidInnerMat = new MeshStandardMaterial({ map: printTex, roughness: 0.95, metalness: 0, envMapIntensity: 0.3 });
+
+  const boxG = new Group();
+  boxG.position.y = BOX_Y;
+  stageG.add(boxG);
+  const slab = (w: number, h: number, d: number, mat: Material | Material[], x: number, y: number, z: number, parent: Object3D = boxG) => {
+    const m = new Mesh(new BoxGeometry(w, h, d), mat);
+    m.position.set(x, y, z);
+    m.castShadow = m.receiveShadow = true;
+    parent.add(m);
+    return m;
+  };
+  // BoxGeometry face order: +x, -x, +y, -y, +z, -z
+  slab(BW, BT, BD, boardInnerMat, 0, BT / 2, 0);
+  slab(BW, BH, BT, [boardMat, boardMat, boardMat, boardMat, boardMat, boardInnerMat], 0, BH / 2, BD / 2 - BT / 2);
+  slab(BW, BH, BT, [boardMat, boardMat, boardMat, boardMat, boardInnerMat, boardMat], 0, BH / 2, -BD / 2 + BT / 2);
+  slab(BT, BH, BD - 2 * BT, [boardMat, boardInnerMat, boardMat, boardMat, boardMat, boardMat], BW / 2 - BT / 2, BH / 2, 0);
+  slab(BT, BH, BD - 2 * BT, [boardInnerMat, boardMat, boardMat, boardMat, boardMat, boardMat], -BW / 2 + BT / 2, BH / 2, 0);
+  // Lid on its hinge (back top edge). Closed = 0; opening rotates it up and back.
+  const hinge = new Group();
+  hinge.position.set(0, BH, -BD / 2);
+  boxG.add(hinge);
+  const LT = 0.03;
+  slab(BW + 0.02, LT, BD + 0.02, [boardMat, boardMat, lidOuterMat, lidInnerMat, boardMat, boardMat], 0, LT / 2, BD / 2 + 0.01, hinge);
+  slab(BW + 0.02, BH * 0.86, LT, boardMat, 0, -BH * 0.43 + LT, BD + 0.02 + LT / 2, hinge); // front tuck flap
+  const LID_OPEN = 1.78; // ≈ 102°
+  await tick();
+
+  // Soft contact shadow under the box.
+  const shadowTex = canvasTex(256, 256, (g) => {
+    g.shadowColor = 'rgba(40,30,15,.55)';
+    g.shadowBlur = 28;
+    g.shadowOffsetX = 1000;
+    g.fillStyle = '#000';
+    g.beginPath();
+    g.roundRect(40 - 1000, 40, 176, 176, 18);
+    g.fill();
+  });
+  const shadowMat = new MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false });
+  const shadow = new Mesh(new PlaneGeometry(BW * 1.45, BD * 1.45), shadowMat);
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = 0.002;
+  shadow.renderOrder = -1;
+  boxG.add(shadow);
 
   // ------------------------------------------------------------------- the cookie
   const cookie = gltf.scene;
@@ -222,67 +332,48 @@ export async function mountHero({ hero, canvas, stage, quality, model }: HeroOpt
     const mat = m.material as MeshStandardMaterial;
     mat.envMapIntensity = 0.12;
     mat.roughness = 0.9; // matte dough: no grey sheen over the photo's colours
-    if (mat.map) mat.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    if (mat.map) mat.map.anisotropy = aniso;
   });
-  cookie.position.y = -0.17; // centre the cookie's mass on the tilt pivot
+  const bb = new Box3().setFromObject(cookie);
+  const COOKIE_H = bb.max.y - bb.min.y;
+  cookie.position.y = -bb.min.y - COOKIE_H / 2; // spin about the cookie's middle
+  const cookieG = new Group();
+  cookieG.rotation.order = 'YXZ';
+  cookieG.rotation.y = -YAW; // face the camera, not the box
+  const spin = new Group();
+  cookieG.add(spin);
   spin.add(cookie);
+  stageG.add(cookieG);
+  const Y_INSIDE = BOX_Y + BT + COOKIE_H / 2 + 0.004;
+  const Y_HOVER = BOX_Y + BH + 0.78;
   await tick();
 
-  // ------------------------------------------------------------------- floating chocolate + salt
-  // Around (not on) the cookie, in the same melted chocolate as the photo, plus loose salt
-  // crystals catching the light. World space, so they drift independently of the cookie.
-  const chocMat = (hex: number, rough = 0.34) =>
-    new MeshPhysicalMaterial({ color: new Color().setHex(hex, SRGBColorSpace), roughness: rough, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.32, envMapIntensity: 1.1 });
+  // ------------------------------------------------------------------- sea-salt flakes
   const saltMat = new MeshPhysicalMaterial({
     color: 0xf3efe8, roughness: 0.12, metalness: 0, flatShading: true, transparent: true, opacity: 0.85,
     clearcoat: 1, clearcoatRoughness: 0.05, ior: 1.55, envMapIntensity: 1.4,
   });
-  const floaters = new Group();
-  scene.add(floaters);
   type Floater = { base: [number, number, number]; rot: [number, number, number]; spinRate: [number, number]; speed: number; phase: number; scale: number };
-  const ring = (n: number, minR: number, maxR: number, minS: number, maxS: number, ySpread: number): Floater[] =>
-    Array.from({ length: n }, (_, i) => {
-      const a = (i / n) * Math.PI * 2 + R(-0.35, 0.35);
-      const r = R(minR, maxR);
-      return {
-        base: [Math.cos(a) * r, R(-ySpread, ySpread), Math.sin(a) * r * 0.5 + R(-0.2, 0.5)],
-        rot: [R(0, 6), R(0, 6), R(0, 6)],
-        spinRate: [R(-0.5, 0.5), R(-0.6, 0.6)],
-        speed: R(0.35, 0.8),
-        phase: R(0, 6.283),
-        scale: R(minS, maxS),
-      };
-    });
-  const chipFloats = ring(high ? 8 : 5, 1.45, 2.15, 0.07, 0.11, 1.0);
-  const chunkFloats = ring(high ? 3 : 2, 1.6, 2.2, 0.16, 0.22, 0.9);
-  const saltFloats = ring(high ? 16 : 9, 1.15, 2.0, 0.03, 0.055, 1.1);
-  const chipIM = new InstancedMesh(discChipGeo(1, 0.52, 4.2), chocMat(0x4a2618), chipFloats.length);
-  const chunkIM = new InstancedMesh(chunkGeo(1, 0.24, 0.8, 7.7), chocMat(0x52291a), chunkFloats.length);
+  const SALT_N = high ? 14 : 8;
+  const saltFloats: Floater[] = Array.from({ length: SALT_N }, (_, i) => {
+    const a = (i / SALT_N) * Math.PI * 2 + R(-0.35, 0.35);
+    const r = R(1.2, 1.85);
+    return {
+      base: [Math.cos(a) * r, R(-0.35, 0.75), Math.sin(a) * r * 0.55 + R(0, 0.4)],
+      rot: [R(0, 6), R(0, 6), R(0, 6)],
+      spinRate: [R(-0.5, 0.5), R(-0.6, 0.6)],
+      speed: R(0.35, 0.8),
+      phase: R(0, 6.283),
+      scale: R(0.03, 0.055),
+    };
+  });
   const saltIM = new InstancedMesh(saltGeo(), saltMat, saltFloats.length);
-  floaters.add(chipIM, chunkIM, saltIM);
+  const floaters = new Group();
+  floaters.rotation.y = -YAW;
+  floaters.add(saltIM);
+  stageG.add(floaters);
   const dummy = new Object3D();
   await tick();
-
-  // ------------------------------------------------------------------- soft ground shadow
-  const shadowTex = (() => {
-    const c = document.createElement('canvas');
-    c.width = c.height = 256;
-    const g = c.getContext('2d')!;
-    const gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
-    gr.addColorStop(0, 'rgba(40,28,12,.55)');
-    gr.addColorStop(0.62, 'rgba(40,28,12,.28)');
-    gr.addColorStop(1, 'rgba(40,28,12,0)');
-    g.fillStyle = gr;
-    g.fillRect(0, 0, 256, 256);
-    const t = new CanvasTexture(c);
-    t.colorSpace = SRGBColorSpace;
-    return t;
-  })();
-  const shadowMat = new MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false });
-  const shadow = new Mesh(new PlaneGeometry(2.6, 2.6), shadowMat);
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.y = -1.0;
-  scene.add(shadow);
 
   // ------------------------------------------------------------------- interaction
   const target = { x: 0, y: 0 };
@@ -344,25 +435,20 @@ export async function mountHero({ hero, canvas, stage, quality, model }: HeroOpt
   resize();
 
   // ------------------------------------------------------------------- loop
-  const ELEV = (34 * Math.PI) / 180;
+  const ELEV = (24 * Math.PI) / 180;
+  const BASE_SCALE = 0.5;
+  const INTRO_END = 2.7;
+  let introT = Math.max(0, Number(hero.dataset.introAt) || 0); // data-intro-at: render a given moment (fallback stills)
   let last = performance.now();
   let elapsed = 0;
   let frames = 0;
   let slowFrames = 0;
   let degraded = false;
   const minFrameMs = high ? 0 : 1000 / 31;
-
-  const placeFloaters = (im: InstancedMesh, data: Floater[], spread: number, pe: number) => {
-    data.forEach((f, i) => {
-      const tt = elapsed * f.speed + f.phase;
-      dummy.position.set(f.base[0] * spread + current.x * 0.25 * f.speed, f.base[1] + Math.sin(tt) * 0.1 - pe * 0.6, f.base[2]);
-      dummy.rotation.set(f.rot[0] + elapsed * f.spinRate[0], f.rot[1] + elapsed * f.spinRate[1], f.rot[2]);
-      dummy.scale.setScalar(f.scale);
-      dummy.updateMatrix();
-      im.setMatrixAt(i, dummy.matrix);
-    });
-    im.instanceMatrix.needsUpdate = true;
-  };
+  const seg = (t: number, a: number, b: number) => clamp((t - a) / (b - a), 0, 1);
+  const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
+  const easeOutBack = (x: number) => 1 + 2.2 * Math.pow(x - 1, 3) + 1.2 * Math.pow(x - 1, 2);
+  const easeInOut = (x: number) => x * x * (3 - 2 * x);
 
   const frame = (now: number) => {
     raf = 0;
@@ -403,25 +489,42 @@ export async function mountHero({ hero, canvas, stage, quality, model }: HeroOpt
     const p = scrollP;
     const pe = p * p * (3 - 2 * p);
 
-    spin.rotation.y += dt * 0.2 * activity + dragVel;
-    tilt.rotation.x = ELEV + current.y * 0.18 + pe * 0.6;
-    tilt.rotation.z = -current.x * 0.18 + Math.sin(elapsed * 0.45) * 0.04;
-    tilt.rotation.y = current.x * 0.16;
-    root.position.set(current.x * 0.12, Math.sin(elapsed * 0.9) * 0.05 * activity - pe * 1.5, 0);
-    root.scale.setScalar(1 - pe * 0.28);
-    shadow.position.y = -1.0 - pe * 1.2;
-    shadowMat.opacity = (1 - pe) * (0.75 - Math.sin(elapsed * 0.9) * 0.08);
-    shadow.scale.setScalar(1 - pe * 0.3);
+    // Intro (plays once, ~2.7 s): the closed box gives a little hop, the lid swings open, the
+    // cookie rises out and turns to face you. Scrolling away lowers it back towards the box.
+    introT += dt;
+    const t = introT;
+    const hop = Math.sin(seg(t, 0.2, 0.62) * Math.PI);
+    const lidP = seg(t, 0.55, 1.55);
+    const riseP = easeOutCubic(seg(t, 1.0, 2.5));
+    hinge.rotation.x = -LID_OPEN * easeOutBack(lidP) - hop * 0.08;
+    boxG.position.y = BOX_Y + hop * 0.06;
+    boxG.rotation.z = Math.sin(t * 38) * 0.012 * hop;
+    const bob = Math.sin(elapsed * 0.9) * 0.05 * activity * riseP;
+    const sink = easeInOut(clamp(pe * 1.4, 0, 1)) * 0.7;
+    cookieG.position.y = Y_INSIDE + (Y_HOVER - Y_INSIDE) * riseP * (1 - sink) + bob;
+    cookieG.rotation.x = 0.32 * riseP * (1 - sink); // tip the top towards the viewer as it rises
+    spin.rotation.y += dt * (0.2 * activity + 1.6 * (1 - riseP) * Math.min(1, t)) + dragVel;
 
-    const spread = 1 + pe * 0.7;
-    placeFloaters(chipIM, chipFloats, spread, pe);
-    placeFloaters(chunkIM, chunkFloats, spread, pe);
-    placeFloaters(saltIM, saltFloats, spread, pe);
-    floaters.rotation.y = current.x * 0.12;
-    floaters.position.y = -pe * 0.8;
+    tilt.rotation.x = ELEV + current.y * 0.12 + pe * 0.35;
+    tilt.rotation.z = -current.x * 0.06;
+    tilt.rotation.y = current.x * 0.22;
+    root.position.set(current.x * 0.1, -0.2 - pe * 1.2, 0);
+    root.scale.setScalar(BASE_SCALE * (1 - pe * 0.22));
+
+    // salt drifts off the risen cookie
+    floaters.position.y = cookieG.position.y;
+    saltFloats.forEach((f, i) => {
+      const tt = elapsed * f.speed + f.phase;
+      dummy.position.set(f.base[0] * (0.6 + 0.4 * riseP) + current.x * 0.2 * f.speed, f.base[1] + Math.sin(tt) * 0.1, f.base[2]);
+      dummy.rotation.set(f.rot[0] + elapsed * f.spinRate[0], f.rot[1] + elapsed * f.spinRate[1], f.rot[2]);
+      dummy.scale.setScalar(f.scale * seg(riseP, 0.5, 1) * (1 - sink));
+      dummy.updateMatrix();
+      saltIM.setMatrixAt(i, dummy.matrix);
+    });
+    saltIM.instanceMatrix.needsUpdate = true;
 
     renderer.render(scene, camera);
-    const settled = idleFor > IDLE_MS && activity < 0.02 && Math.abs(target.x - current.x) + Math.abs(target.y - current.y) < 0.001 && Math.abs(dragVel) < 1e-4;
+    const settled = introT > INTRO_END && idleFor > IDLE_MS && activity < 0.02 && Math.abs(target.x - current.x) + Math.abs(target.y - current.y) < 0.001 && Math.abs(dragVel) < 1e-4;
     if (ready && onScreen && !document.hidden && !destroyed && !settled) raf = requestAnimationFrame(frame);
   };
 
@@ -453,7 +556,7 @@ export async function mountHero({ hero, canvas, stage, quality, model }: HeroOpt
   await tick();
   await renderer.compileAsync(scene, camera);
   if (destroyed) return { destroy };
-  frame(performance.now()); // positions the floaters and renders once (loop not running yet)
+  frame(performance.now()); // poses the scene and renders once (loop not running yet)
   ready = true;
   lastInput = performance.now();
   requestAnimationFrame(() => hero.classList.add('is-3d'));
@@ -464,6 +567,7 @@ export async function mountHero({ hero, canvas, stage, quality, model }: HeroOpt
     destroyed = true;
     stop();
     hero.classList.remove('is-3d');
+    hero.classList.add('hero--static');
     io.disconnect();
     ro.disconnect();
     window.removeEventListener('pointermove', onPointer);

@@ -52,6 +52,7 @@ const images = {
   'm-kuki-roll-fistiki': 'cjWRFgtRAYby5uDbJKFD1Wd5LyQ',
   // ---- Hero: first frame of the 3D cookie (scripts/render-hero-fallback.mjs), transparent PNG
   'c-hero-cookie': 'hero-cookie-render.png',
+  'c-hero-box-open': 'hero-box-open-render.png',
   // ---- Transparent cut-outs
   'c-cookie-1': 'Q84IqwlizS458fY1jVkYtX9wLso',
   'c-cookie-2': 'TUvQ5AiLhFtleEHZBYem2oSs7g',

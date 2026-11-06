@@ -14,20 +14,25 @@ export function initHero(): void {
   const canvas = $<HTMLCanvasElement>('[data-hero-canvas]', hero || document);
   const stage = $('[data-hero-stage]', hero || document);
   if (!hero || !canvas || !stage) return;
-  if (hero.dataset.quality === 'off') return;
+  // Where the 3D won't run, show the open box (the closed one only makes sense before it opens).
+  const staticHero = () => hero.classList.add('hero--static');
+  if (hero.dataset.quality === 'off') return staticHero();
 
   const nav = navigator as NavigatorExtras;
   const saveData = !!nav.connection?.saveData || /(^|-)2g$/.test(nav.connection?.effectiveType || '');
   const lowMemory = typeof nav.deviceMemory === 'number' && nav.deviceMemory < 2;
-  if (saveData || lowMemory || reducedMotion() || !hasWebGL()) return;
+  if (saveData || lowMemory || reducedMotion() || !hasWebGL()) return staticHero();
 
   const quality: 'high' | 'low' =
     finePointer() && window.innerWidth >= 900 && (navigator.hardwareConcurrency || 4) > 4 ? 'high' : 'low';
 
   const start = () => {
     import('./hero3d')
-      .then(({ mountHero }) => mountHero({ hero, canvas, stage, quality, model: canvas.dataset.model }))
-      .catch(() => hero.classList.remove('is-3d'));
+      .then(({ mountHero }) => mountHero({ hero, canvas, stage, quality, model: canvas.dataset.model, art: ['art-1', 'art-2', 'art-3'].map((k) => canvas.dataset[k]).filter((u): u is string => !!u) }))
+      .catch(() => {
+        hero.classList.remove('is-3d');
+        staticHero();
+      });
   };
   // Load on the visitor's first sign of engagement (after the page has loaded), never during
   // LCP. Until then the real cookie photo floats with a CSS animation, so nothing looks missing.

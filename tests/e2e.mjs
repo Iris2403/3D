@@ -291,7 +291,8 @@ await test('3D hero loads lazily on capable desktop and never on reduced-motion'
   await rm.goto(BASE + '/', { waitUntil: 'networkidle' });
   await rm.waitForTimeout(2500);
   assert(rmScripts.length === 0, '3D loaded despite reduced motion');
-  assert(await rm.isVisible('.hero__fallback img'), 'fallback image not visible');
+  assert(await rm.isVisible('.hero__fallback-open img'), 'open-box fallback image not visible');
+  assert(!(await rm.isVisible('.hero__fallback-closed img')), 'closed-box image shown without 3D');
   await rm.context().close();
 });
 
