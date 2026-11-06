@@ -405,6 +405,8 @@ ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
   html.js [data-split] .w { display: inline-block; overflow: clip; vertical-align: top; padding: 0.04em 0.16em 0.14em 0.06em; margin: -0.04em -0.16em -0.14em -0.06em; }
   html.js [data-split] .w > span { display: inline-block; transform: translateY(105%); transition: transform 1s var(--ease-out); transition-delay: calc(var(--i, 0) * 55ms); }
   html.js [data-split].is-in .w > span { transform: none; }
+  /* Once the reveal has finished, drop the clipping entirely: no glyph can ever be cut. */
+  html.js [data-split].is-done .w { overflow: visible; }
   html.js [data-clip] { clip-path: inset(12% 12% 12% 12% round var(--r-lg)); transition: clip-path 1.3s var(--ease-out); }
   html.js [data-clip].is-in { clip-path: inset(0 0 0 0 round var(--r-lg)); }
 }

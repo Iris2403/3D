@@ -12,6 +12,11 @@ export function initReveal(): void {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-in');
+          // Word reveals clip each word while it rises in; unclip once every word has landed.
+          if (entry.target.hasAttribute('data-split')) {
+            const words = entry.target.querySelectorAll('.w').length;
+            window.setTimeout(() => entry.target.classList.add('is-done'), 1000 + words * 55 + 150);
+          }
           io.unobserve(entry.target);
         }
       });
