@@ -4,7 +4,7 @@
  *
  * The cookie
  *  - puffy, hand-shaped body (lathe-like profile with an irregular edge), displaced by noise along
- *    its normals, coloured by a real dough photo (theme/assets/cookie-dough.jpg) + baked shading
+ *    its normals, coloured by a real dough photo (theme/assets/cookie-dough.webp) + baked shading
  *  - lathe-turned chocolate discs and a bevelled chocolate chunk, laid out like the reference
  *    photo, in a glossy clear-coat chocolate material
  *  - Maldon-style salt (flat flakes + little pyramids) on the chunk and dough, and baked crumbs
@@ -46,6 +46,7 @@ import {
   Raycaster,
   RepeatWrapping,
   Scene,
+  ShaderChunk,
   SRGBColorSpace,
   Texture,
   Vector2,
@@ -145,9 +146,13 @@ async function loadTexture(url: string): Promise<Texture | null> {
   }
 }
 
-// Mean linear colour of the dough photo: lets the wall / underside vertex colours tint the
-// photo towards a darker bake without losing its grain.
-const DOUGH_M = [0.4544, 0.1954, 0.0489];
+// Mean linear colour of the dough texture (made from the real KUKI photo): lets the wall /
+// underside vertex colours tint it towards a darker bake without losing its grain.
+const DOUGH_M = [0.2093, 0.1117, 0.0663]; // printed by scripts/build-dough-texture.py
+// Colour grade (linear multipliers) matching the reference render of the KUKI cookie: a warm,
+// olive-brown top and a deeper baked crust on the edge — measured against the reference image.
+const TOP_GRADE = [0.37, 0.27, 0.125];
+const EDGE_GRADE = [0.2, 0.27, 0.33];
 
 // ---------------------------------------------------------------------------------------------
 // Scene
@@ -200,10 +205,10 @@ export async function mountHero({ hero, canvas, stage, quality, texture }: HeroO
   key.shadow.normalBias = 0.005;
   key.shadow.radius = 5;
   tilt.add(key, key.target);
-  const rim = new DirectionalLight(0xdfeaff, 1.1);
+  const rim = new DirectionalLight(0xffe6c8, 0.9); // warm rim: keeps the browns rich, not grey
   rim.position.set(3, 2.2, -3.2);
   tilt.add(rim);
-  scene.add(new HemisphereLight(0xfff6ea, 0xb9c4a8, 0.55));
+  scene.add(new HemisphereLight(0xfff3e0, 0x8a6a4a, 0.6));
 
   // ------------------------------------------------------------------- cookie body
   const S = CFG.segments;
@@ -288,8 +293,8 @@ export async function mountHero({ hero, canvas, stage, quality, texture }: HeroO
     const z = pos[id * 3 + 2];
     const d =
       k === 0
-        ? 0.022 * fbm(x * 2.2, y * 2.2, z * 2.2, 3) + 0.008 * fbm(x * 9 + 3, z * 9, y * 9, 3) + 0.011 * (ridge(x * 5, z * 5, 3.1) - 0.5)
-        : 0.016 * fbm(x * 7, y * 7 + 9, z * 7, 3) + 0.008 * fbm(x * 18, y * 18, z * 18, 2);
+        ? 0.024 * fbm(x * 2.2, y * 2.2, z * 2.2, 3) + 0.01 * fbm(x * 9 + 3, z * 9, y * 9, 3) + 0.016 * (ridge(x * 5, z * 5, 3.1) - 0.5)
+        : 0.024 * fbm(x * 7, y * 7 + 9, z * 7, 3) + 0.01 * fbm(x * 18, y * 18, z * 18, 2);
     pos[id * 3] += nrm.getX(id) * d;
     pos[id * 3 + 1] = Math.max(0, y + nrm.getY(id) * d);
     pos[id * 3 + 2] += nrm.getZ(id) * d;
@@ -297,10 +302,11 @@ export async function mountHero({ hero, canvas, stage, quality, texture }: HeroO
   body.attributes.position.needsUpdate = true;
   fixPoles();
   // UVs + vertex colours: golden-brown, darker where the wall and rim bake.
-  const golden = [0.78, 0.56, 0.32];
-  const mid = [0.63, 0.42, 0.21];
-  const dark = [0.4, 0.24, 0.11];
-  const under = [0.5, 0.33, 0.16];
+  // Browns sampled from the KUKI photo (sRGB): baked dough → toasted → deep crust.
+  const golden = [0.56, 0.41, 0.3];
+  const mid = [0.45, 0.32, 0.22];
+  const dark = [0.29, 0.19, 0.12];
+  const under = [0.37, 0.26, 0.18];
   for (let id = 0; id < N * S; id++) {
     if (id % 4000 === 0) await tick();
     const x = pos[id * 3];
@@ -325,13 +331,13 @@ export async function mountHero({ hero, canvas, stage, quality, texture }: HeroO
     if (TEX && k === 0) {
       // The photo carries the colour; the vertex colour only bakes the rim darker.
       const e = clamp(0.45 * smooth(0.8, 0.99, r) + 0.12 * (1 - m), 0, 0.75);
-      col[id * 3] = lerp(1, 0.55, e);
-      col[id * 3 + 1] = lerp(1, 0.48, e);
-      col[id * 3 + 2] = lerp(1, 0.4, e);
+      col[id * 3] = lerp(1, 0.55, e) * TOP_GRADE[0];
+      col[id * 3 + 1] = lerp(1, 0.48, e) * TOP_GRADE[1];
+      col[id * 3 + 2] = lerp(1, 0.4, e) * TOP_GRADE[2];
     } else if (TEX) {
-      col[id * 3] = Math.min(2.5, lin.r / DOUGH_M[0]);
-      col[id * 3 + 1] = Math.min(2.5, lin.g / DOUGH_M[1]);
-      col[id * 3 + 2] = Math.min(2.5, lin.b / DOUGH_M[2]);
+      col[id * 3] = Math.min(2.5, lin.r / DOUGH_M[0]) * EDGE_GRADE[0];
+      col[id * 3 + 1] = Math.min(2.5, lin.g / DOUGH_M[1]) * EDGE_GRADE[1];
+      col[id * 3 + 2] = Math.min(2.5, lin.b / DOUGH_M[2]) * EDGE_GRADE[2];
     } else {
       col[id * 3] = lin.r;
       col[id * 3 + 1] = lin.g;
@@ -345,7 +351,41 @@ export async function mountHero({ hero, canvas, stage, quality, texture }: HeroO
   bump.wrapS = bump.wrapT = RepeatWrapping;
   bump.repeat.set(3, 3);
   bump.anisotropy = 4;
-  const bodyMat = new MeshStandardMaterial({ vertexColors: true, map: TEX, roughness: 0.9, metalness: 0, bumpMap: bump, bumpScale: 3.4, envMapIntensity: 0.45 });
+  const bodyMat = new MeshStandardMaterial({ vertexColors: true, map: TEX, roughness: 0.82, metalness: 0, bumpMap: bump, bumpScale: 2, envMapIntensity: 0.3 });
+  if (TEX) TEX.wrapS = TEX.wrapT = RepeatWrapping;
+  // Triplanar texturing: the dough photo and the bump detail are projected from the direction each
+  // surface faces (top / front / side) and blended, so the rounded edge and the wall get real crust
+  // texture at its natural scale — no stretching, no seams.
+  bodyMat.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vObjPos;\nvarying vec3 vObjNormal;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvObjPos = position;\nvObjNormal = normal;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+        varying vec3 vObjPos;
+        varying vec3 vObjNormal;
+        vec2 triBumpUv() {
+          vec3 n = abs(normalize(vObjNormal));
+          vec3 p = vObjPos * 1.5;
+          if (n.y > 0.55) return p.xz;
+          return n.x > n.z ? p.zy : p.xy;
+        }`,
+      )
+      .replace('#include <bumpmap_pars_fragment>', ShaderChunk.bumpmap_pars_fragment.replace(/vBumpMapUv/g, 'triBumpUv()'))
+      .replace(
+        '#include <map_fragment>',
+        `#ifdef USE_MAP
+          vec3 tw = pow(abs(normalize(vObjNormal)), vec3(4.0));
+          tw /= (tw.x + tw.y + tw.z);
+          vec4 tX = texture2D(map, vObjPos.zy * 0.5 + vec2(0.5, 0.3));
+          vec4 tY = texture2D(map, vObjPos.xz * 0.5 + 0.5);
+          vec4 tZ = texture2D(map, vObjPos.xy * 0.5 + vec2(0.5, 0.3));
+          diffuseColor *= tX * tw.x + tY * tw.y + tZ * tw.z;
+        #endif`,
+      );
+  };
   const cookie = new Mesh(body, bodyMat);
   cookie.castShadow = cookie.receiveShadow = true;
   spin.add(cookie);
@@ -575,7 +615,7 @@ export async function mountHero({ hero, canvas, stage, quality, texture }: HeroO
   // ------------------------------------------------------------------- baked crumb bits
   {
     const g = jitterFlat(new DodecahedronGeometry(1, 0).toNonIndexed(), 0.25, 3);
-    const m = new MeshStandardMaterial({ color: new Color().setHex(0xd2994f, SRGBColorSpace), roughness: 0.95, flatShading: true, envMapIntensity: 0.3 });
+    const m = new MeshStandardMaterial({ color: new Color().setHex(0x7a5a3e, SRGBColorSpace), roughness: 0.95, flatShading: true, envMapIntensity: 0.3 });
     const im = new InstancedMesh(g, m, CFG.crumbs);
     let k = 0;
     let guard = 0;
@@ -751,10 +791,12 @@ export async function mountHero({ hero, canvas, stage, quality, texture }: HeroO
       raf = requestAnimationFrame(frame);
       return;
     }
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const realDt = Math.min(1, (now - last) / 1000);
+    const dt = Math.min(0.05, realDt); // animation step (capped so a hitch never jumps the scene)
     last = now;
     const idleFor = now - lastInput;
-    activity += ((idleFor > IDLE_MS ? 0 : 1) - activity) * Math.min(1, dt * 2.5);
+    // Easing to rest uses real time, so slow devices settle (and stop rendering) on schedule too.
+    activity += ((idleFor > IDLE_MS ? 0 : 1) - activity) * Math.min(1, realDt * 2.5);
     elapsed += dt * Math.max(activity, 0.02);
 
     // Adaptive quality: drop resolution + shadows, then fall back to the photo.

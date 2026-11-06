@@ -98,7 +98,9 @@ npm run templates      # re-generate templates/*.json from scripts/gen-templates
 
 **3D hero** (`src/modules/hero3d.ts`)
 - The cookie is the **Sea Salt Chocolate Chip Cookie** design (`src/modules/hero3d.ts`): a puffy,
-  hand-shaped body textured with a real dough photo (`theme/assets/cookie-dough.jpg`), lathe-turned
+  hand-shaped body textured with KUKI's own dough (`theme/assets/cookie-dough.webp`, synthesised from
+  the real cookie photo by `scripts/build-dough-texture.py`; triplanar-mapped so the edge has real crust
+  texture too, and colour-graded to the reference render), lathe-turned
   chocolate discs and a bevelled chocolate chunk in a glossy clear-coat material, Maldon-style salt
   flakes and pyramids, baked crumbs, and contact shading around the chocolate. Studio reflections
   come from a room environment map; soft real-time shadows are on for capable devices only.
