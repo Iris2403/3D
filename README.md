@@ -27,6 +27,14 @@ tests/e2e.mjs     Playwright + axe-core test suite
 source-assets/    original images & videos downloaded from the current theme
 ```
 
+## GitHub Pages preview
+
+Every push to `main` publishes a static preview to **https://iris2403.github.io/3D/** via
+`.github/workflows/pages.yml`. The workflow builds the theme and runs `scripts/export-static.mjs`.
+Pages can't run Shopify, so the forms validate as normal and then show a "preview only" note.
+Everything else (3D hero, menu, gallery, store finder, dialogs) works as it will on the store.
+One-time setup: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
 ## Commands
 
 ```bash
