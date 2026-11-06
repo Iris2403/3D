@@ -40,7 +40,7 @@ document.addEventListener('submit', function (e) {
 function rewrite(html) {
   if (SITE_URL) html = html.split(ORIGIN).join(SITE_URL);
   // Root-relative URLs in attributes (href, src, srcset, action, poster, imagesrcset, content) and CSS url().
-  html = html.replace(/(\s(?:href|src|action|poster|content|data-texture|data-model|data-art-\d)=")\/(?!\/)/g, `$1${BASE}/`);
+  html = html.replace(/(\s(?:href|src|action|poster|content|data-[\w-]+)=")\/(?!\/)/g, `$1${BASE}/`);
   html = html.replace(/((?:srcset|imagesrcset)=")([^"]*)"/g, (_, a, v) => `${a}${v.replace(/(^|,\s*)\/(?!\/)/g, `$1${BASE}/`)}"`);
   html = html.replace(/url\(\/(?!\/)/g, `url(${BASE}/`);
   return html.replace('</body>', `${PAGES_NOTICE}\n</body>`);
