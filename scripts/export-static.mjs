@@ -14,6 +14,10 @@ const OUT = join(root, 'site');
 const BASE = (process.env.BASE_PATH || '').replace(/\/$/, '');
 const SITE_URL = (process.env.SITE_URL || '').replace(/\/$/, '');
 const PORT = 4199;
+// Who the preview is credited to (banner + copyright). Override with OWNER="Your Name".
+const OWNER = process.env.OWNER || 'Iris2403';
+const YEAR = new Date().getFullYear();
+const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const ORIGIN = `http://localhost:${PORT}`;
 
 const ROUTES = {
@@ -45,13 +49,25 @@ function rewrite(html) {
   html = html.replace(/((?:srcset|imagesrcset)=")([^"]*)"/g, (_, a, v) => `${a}${v.replace(/(^|,\s*)\/(?!\/)/g, `$1${BASE}/`)}"`);
   html = html.replace(/url\(\/(?!\/)/g, `url(${BASE}/`);
   html = html.replace('</body>', `${PAGES_NOTICE}\n</body>`);
-  return withCsp(html);
+  return withCsp(markAsPrototype(html));
 }
 
 // GitHub Pages can't send response headers, so the preview gets the strictest policy a <meta> tag
 // can carry: scripts only from this origin plus the exact inline scripts on the page (by hash).
 // (frame-ancestors, X-Frame-Options, nosniff and Permissions-Policy are header-only; Shopify sends
 // the first three itself on the real store.)
+// Preview only (never in the Shopify theme): keep it out of search engines, state the copyright,
+// and show a small "concept prototype" note on every page.
+function markAsPrototype(html) {
+  const who = esc(OWNER);
+  const head = `<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<meta name="author" content="${who}">
+<meta name="copyright" content="© ${YEAR} ${who}. All rights reserved.">
+<style>.proto-note{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:2147483000;max-width:calc(100% - 24px);padding:.5em 1em;border-radius:999px;background:rgb(36 21 13 / .9);color:#fffaea;font:600 12px/1.35 Manrope,"Manrope Fallback",system-ui,sans-serif;letter-spacing:.02em;text-align:center;pointer-events:none;box-shadow:0 4px 18px rgb(0 0 0 / .18)}@media print{.proto-note{position:static;transform:none;margin:1em auto}}</style>`;
+  const note = `<p class="proto-note" role="note">Concept prototype by ${who} · © ${YEAR} · Shared for evaluation only. All rights reserved.</p>`;
+  return html.replace(/<meta name="robots"[^>]*>\s*/g, '').replace('</head>', `${head}\n</head>`).replace(/<body([^>]*)>/, `<body$1>\n${note}`);
+}
+
 function withCsp(html) {
   const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(
     (m) => `'sha256-${createHash('sha256').update(m[1], 'utf8').digest('base64')}'`,

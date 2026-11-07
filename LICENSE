@@ -1,0 +1,22 @@
+Copyright (c) 2026 Iris2403. All rights reserved.
+
+PROPRIETARY AND CONFIDENTIAL — NOT OPEN SOURCE
+
+This repository and the prototype published from it (including the GitHub Pages preview) contain the
+original work of Iris2403: source code, build scripts, the 3D scene (the box, its animation and the
+cookie model pipeline), visual design, layout and interaction design (the "Work").
+
+The Work is shared solely so that it can be viewed and evaluated as a concept. No licence or other right
+is granted to anyone to use, copy, reproduce, modify, adapt, publish, distribute, sublicense, deploy or
+create derivative works from the Work, in whole or in part, by any means, without the prior written
+permission of the copyright holder. Viewing the preview or the source does not grant any such right.
+
+Any use of the Work beyond viewing it for evaluation requires a separate written agreement with the
+copyright holder.
+
+Third-party material: KUKI brand assets (name, logo, mascot illustrations, photographs, videos, menu
+text and packaging artwork) belong to their respective owner and are used in this prototype for
+presentation only. They are not part of the Work and this licence claims no rights in them. Open-source
+libraries keep their own licences (see package.json / node_modules).
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.

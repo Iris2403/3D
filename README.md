@@ -1,5 +1,8 @@
 # KUKI Flagship — Shopify theme
 
+> **© 2026 Iris2403. All rights reserved.** Proprietary concept prototype, shared for evaluation only.
+> No permission is granted to use, copy, modify or deploy any part of it without written agreement. See [LICENSE](LICENSE).
+
 A full redesign of [kukiworld.com](https://kukiworld.com/) as a Shopify Online Store 2.0 theme, featuring
 an interactive 3D hero: the sage KUKI box opens and a real Classic Kuki rises out of it. Brand palette: **sage, chocolate brown and butter yellow**
 (tokens at the top of `src/styles/kuki.css`).
@@ -34,7 +37,10 @@ Every push to `main` publishes a static preview to **https://iris2403.github.io/
 `.github/workflows/pages.yml`. The workflow builds the theme and runs `scripts/export-static.mjs`.
 Pages can't run Shopify, so the forms validate as normal and then show a "preview only" note.
 Everything else (3D hero, menu, gallery, store finder, dialogs) works as it will on the store.
-One-time setup: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+One-time setup: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**. If it is set
+to "Deploy from a branch", GitHub publishes this README instead of the site.
+The preview carries a "Concept prototype by … · All rights reserved" note on every page, a copyright meta tag and
+`noindex` (it stays out of search engines). The name comes from `OWNER` in `scripts/export-static.mjs`.
 
 ## Commands
 
