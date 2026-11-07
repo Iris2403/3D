@@ -28,7 +28,7 @@ export function initHero(): void {
 
   const start = () => {
     import('./hero3d')
-      .then(({ mountHero }) => mountHero({ hero, canvas, stage, quality, model: canvas.dataset.model, art: ['art-1', 'art-2', 'art-3'].map((k) => canvas.dataset[k]).filter((u): u is string => !!u) }))
+      .then(({ mountHero }) => mountHero({ hero, canvas, stage, quality, model: canvas.dataset.model, art: ['art-1', 'art-2', 'art-3', 'art-4'].map((k) => canvas.dataset[k]).filter((u): u is string => !!u) }))
       .catch(() => {
         hero.classList.remove('is-3d');
         staticHero();

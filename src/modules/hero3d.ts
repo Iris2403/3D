@@ -1,6 +1,6 @@
 /**
  * KUKI hero — the KUKI box opens and the real Classic Kuki (theme/assets/kuki-cookie.glb) rises
- * out of it. The box is the brand's sage packaging: "KUKI" on the lid, the four-step mascot
+ * out of it. The box is the brand's sage packaging: the mascot face on the lid, the four-step mascot
  * print ("Step 1 … Step 4: Smile & Repeat") inside it. A few sea-salt flakes drift off the cookie.
  *
  * The model is reconstructed from the KUKI product render (scripts/build-cookie-maps.py +
@@ -53,7 +53,7 @@ export interface HeroOptions {
   quality: 'high' | 'low';
   /** URL of the cookie model (.glb). */
   model?: string;
-  /** Mascot illustrations printed inside the lid (steps 1–3). */
+  /** Mascot illustrations printed inside the lid (steps 1–3), then the mascot face for the lid top. */
   art?: string[];
 }
 
@@ -223,10 +223,9 @@ export async function mountHero({ hero, canvas, stage, quality, model, art = [] 
       im.onerror = () => res(null);
       im.src = src;
     });
-  const [mascots] = await Promise.all([Promise.all(art.slice(0, 3).map(loadImg)), document.fonts?.ready]);
+  const [mascots] = await Promise.all([Promise.all(art.slice(0, 4).map(loadImg)), document.fonts?.ready]);
   await tick();
   const bodyFont = (w: number, px: number) => `${w} ${px}px Manrope, "Manrope Fallback", Arial, sans-serif`;
-  const displayFont = (px: number) => `700 ${px}px "Fraunces Soft", "Fraunces Fallback", Georgia, serif`;
 
   // Inside of the lid — as printed on the real box.
   const printTex = canvasTex(1024, 1024, (g) => {
@@ -266,16 +265,18 @@ export async function mountHero({ hero, canvas, stage, quality, model, art = [] 
     g.font = bodyFont(800, 58);
     g.fillText('Step 4: Smile & Repeat', 512, 880);
   });
-  // Outside of the lid: the KUKI wordmark, printed a few shades deeper than the board.
+  // Outside of the lid: the KUKI mascot face (the brand mark), as on the site header.
   const lidTopTex = canvasTex(1024, 1024, (g) => {
     paper(g, 1024, 1024);
-    g.fillStyle = 'rgba(43,52,34,.5)';
-    g.textAlign = 'center';
-    g.textBaseline = 'middle';
-    g.font = displayFont(250);
-    g.fillText('Kuki', 512, 520);
-    g.font = bodyFont(800, 34);
-    g.fillText('HANDMADE COOKIES · ATHENS', 512, 700);
+    const face = mascots[3];
+    if (face) {
+      const d = 470;
+      g.save();
+      g.translate(512, 512);
+      g.rotate(-0.14);
+      g.drawImage(face, -d / 2, -d / 2, d, d);
+      g.restore();
+    }
   });
   const lidOuterMat = new MeshStandardMaterial({ map: lidTopTex, roughness: 0.9, metalness: 0, envMapIntensity: 0.35 });
   const lidInnerMat = new MeshStandardMaterial({ map: printTex, roughness: 0.95, metalness: 0, envMapIntensity: 0.3 });

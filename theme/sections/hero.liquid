@@ -33,7 +33,7 @@
         {%- render 'kuki-picture', image: section.settings.fallback_image, name: 'c-hero-cookie', alt: section.settings.fallback_alt, class: 'hero__fallback-closed', sizes: '(min-width: 900px) 840px, 104vw', priority: true -%}
         {%- render 'kuki-picture', name: 'c-hero-box-open', alt: section.settings.fallback_alt_open, class: 'hero__fallback-open', sizes: '(min-width: 900px) 840px, 104vw' -%}
       </div>
-      <canvas class="hero__canvas" data-hero-canvas data-model="{%- if section.settings.model_url != blank -%}{{ section.settings.model_url | escape }}{%- else -%}{{ 'kuki-cookie.glb' | asset_url }}{%- endif -%}" data-art-1="{{ 'i-mascot-cookie-sm.webp' | asset_url }}" data-art-2="{{ 'i-mascot-drink-sm.webp' | asset_url }}" data-art-3="{{ 'i-mascot-thumbs-sm.webp' | asset_url }}" aria-hidden="true" tabindex="-1"></canvas>
+      <canvas class="hero__canvas" data-hero-canvas data-model="{%- if section.settings.model_url != blank -%}{{ section.settings.model_url | escape }}{%- else -%}{{ 'kuki-cookie.glb' | asset_url }}{%- endif -%}" data-art-1="{{ 'i-mascot-cookie-sm.webp' | asset_url }}" data-art-2="{{ 'i-mascot-drink-sm.webp' | asset_url }}" data-art-3="{{ 'i-mascot-thumbs-sm.webp' | asset_url }}" data-art-4="{{ 'kuki-mascot-512.webp' | asset_url }}" aria-hidden="true" tabindex="-1"></canvas>
     </div>
   </div>
   {%- render 'kuki-picture', name: 'i-mascot-wave', alt: '', class: 'hero__mascot', sizes: '130px' -%}
