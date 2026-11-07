@@ -5,7 +5,6 @@ import { defineConfig } from 'vite';
 // - kuki-hero3d-[hash].js + three: lazy chunk, fetched only when the 3D hero can run
 export default defineConfig({
   base: './',
-  plugins: [],
   build: {
     outDir: 'theme/assets',
     emptyOutDir: false, // never wipe images/fonts in theme/assets
